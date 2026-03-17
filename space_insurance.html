@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      var correct = 'immortaldata';
+      var entered = sessionStorage.getItem('dashboard_auth');
+      if (entered !== correct) {
+        var attempt = prompt('This dashboard is password protected.\n\nPlease enter the password to continue:');
+        if (attempt !== correct) {
+          document.documentElement.innerHTML = '<div style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#060b18;color:#e8f4f8;font-size:1.2rem;">Access denied. Please refresh the page and enter the correct password.</div>';
+          throw new Error('Access denied');
+        }
+        sessionStorage.setItem('dashboard_auth', correct);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Insurance Market — Deep Dive Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #060b18;
+      --surface: #0d1a2e;
+      --surface2: #112240;
+      --accent: #00d4ff;
+      --accent2: #7b61ff;
+      --accent3: #00e5a0;
+      --accent4: #ff6b6b;
+      --accent5: #ffb347;
+      --text: #e8f4f8;
+      --muted: #8899aa;
+      --border: rgba(0,212,255,0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,11,24,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+    }
+    .nav-brand { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .nav-badge { font-size: 0.7rem; color: var(--muted); border: 1px solid var(--border); padding: 0.2rem 0.6rem; border-radius: 20px; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #060b18 0%, #0a1628 40%, #0d2040 100%);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 60% 40%, rgba(0,212,255,0.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at 30% 70%, rgba(123,97,255,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-tag { display: inline-block; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); color: var(--accent); font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.3rem 1rem; border-radius: 20px; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 1.1rem; color: var(--muted); max-width: 700px; margin: 0 auto 2.5rem; }
+    .hero-stats { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+    .hero-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 2rem; min-width: 160px; }
+    .hero-stat .val { font-size: 1.8rem; font-weight: 800; color: var(--accent); display: block; }
+    .hero-stat .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .hero-stat .sub { font-size: 0.68rem; color: var(--accent3); margin-top: 0.2rem; }
+
+    /* SECTIONS */
+    .section { padding: 4rem 2rem; max-width: 1300px; margin: 0 auto; }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-num { display: inline-block; background: var(--accent); color: var(--bg); font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.5rem; letter-spacing: 0.1em; }
+    .section-header h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 0.5rem; }
+    .section-header p { color: var(--muted); max-width: 800px; font-size: 0.95rem; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* GRID LAYOUTS */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    @media (max-width: 1100px) { .grid-4 { grid-template-columns: 1fr 1fr; } }
+
+    /* CHART CARDS */
+    .chart-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden;
+    }
+    .chart-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .chart-card.green::before { background: linear-gradient(90deg, var(--accent3), var(--accent)); }
+    .chart-card.orange::before { background: linear-gradient(90deg, var(--accent5), var(--accent4)); }
+    .chart-card.purple::before { background: linear-gradient(90deg, var(--accent2), var(--accent4)); }
+    .chart-card h3 { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+    .chart-card .chart-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; }
+    .chart-card canvas { max-height: 280px; }
+    .chart-card.tall canvas { max-height: 360px; }
+
+    /* INSIGHT BOXES */
+    .insight-box { background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 1rem 1.2rem; margin-top: 1rem; font-size: 0.85rem; color: var(--text); }
+    .insight-box strong { color: var(--accent); }
+    .insight-box.green { background: rgba(0,229,160,0.05); border-color: rgba(0,229,160,0.2); border-left-color: var(--accent3); }
+    .insight-box.green strong { color: var(--accent3); }
+    .insight-box.orange { background: rgba(255,179,71,0.05); border-color: rgba(255,179,71,0.2); border-left-color: var(--accent5); }
+    .insight-box.orange strong { color: var(--accent5); }
+    .insight-box.red { background: rgba(255,107,107,0.05); border-color: rgba(255,107,107,0.2); border-left-color: var(--accent4); }
+    .insight-box.red strong { color: var(--accent4); }
+
+    /* TABLES */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-top: 1rem; }
+    .data-table th { background: rgba(0,212,255,0.1); color: var(--accent); font-weight: 600; padding: 0.7rem 1rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .data-table td { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+    .data-table tr:hover td { background: rgba(0,212,255,0.03); }
+    .data-table .highlight { color: var(--accent); font-weight: 600; }
+    .data-table .green { color: var(--accent3); }
+    .data-table .orange { color: var(--accent5); }
+    .data-table .red { color: var(--accent4); }
+    .data-table .muted { color: var(--muted); }
+
+    /* UNDERWRITER CARDS */
+    .underwriter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .uw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+    .uw-card .uw-name { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; }
+    .uw-card .uw-country { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.8rem; }
+    .uw-card .uw-share { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+    .uw-card .uw-share-lbl { font-size: 0.7rem; color: var(--muted); }
+    .uw-bar { height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; margin: 0.6rem 0; }
+    .uw-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .uw-detail { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    /* CLAIMS TIMELINE */
+    .claims-timeline { position: relative; padding-left: 2rem; }
+    .claims-timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--accent4), var(--accent2), var(--accent3)); }
+    .claim-item { position: relative; margin-bottom: 1.5rem; }
+    .claim-item::before { content: ''; position: absolute; left: -1.65rem; top: 0.4rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent4); border: 2px solid var(--bg); }
+    .claim-year { font-size: 0.7rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .claim-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 0.1rem 0; }
+    .claim-amount { font-size: 1.1rem; font-weight: 800; color: var(--accent4); }
+    .claim-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* REGULATORY CARDS */
+    .reg-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .reg-card .reg-country { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .reg-card .reg-flag { font-size: 1.5rem; }
+    .reg-card .reg-name { font-size: 1rem; font-weight: 700; }
+    .reg-card .reg-status { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; margin-left: auto; }
+    .reg-card .reg-status.active { background: rgba(0,229,160,0.15); color: var(--accent3); }
+    .reg-card .reg-status.developing { background: rgba(255,179,71,0.15); color: var(--accent5); }
+    .reg-card .reg-status.emerging { background: rgba(123,97,255,0.15); color: var(--accent2); }
+    .reg-item { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; font-size: 0.82rem; }
+    .reg-item .reg-icon { color: var(--accent); flex-shrink: 0; }
+    .reg-item .reg-text { color: var(--muted); }
+    .reg-item .reg-text strong { color: var(--text); }
+
+    /* GROWTH DRIVERS */
+    .driver-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+    .driver-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; }
+    .driver-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .driver-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+    .driver-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+    .driver-impact { display: inline-block; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 10px; margin-top: 0.5rem; font-weight: 600; }
+    .driver-impact.high { background: rgba(0,229,160,0.15); color: var(--accent3); }
+    .driver-impact.medium { background: rgba(255,179,71,0.15); color: var(--accent5); }
+
+    /* OPPORTUNITY CALLOUT */
+    .opportunity-callout {
+      background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,97,255,0.08));
+      border: 1px solid rgba(0,212,255,0.25); border-radius: 16px;
+      padding: 2rem; margin: 2rem 0; text-align: center;
+    }
+    .opportunity-callout h3 { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; }
+    .opportunity-callout p { color: var(--muted); font-size: 0.9rem; max-width: 700px; margin: 0 auto; }
+
+    /* FOOTER */
+    footer { background: var(--surface); border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Space Insurance — Deep Dive</div>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#regional">Regional</a>
+    <a href="#coverage">Coverage</a>
+    <a href="#underwriters">Underwriters</a>
+    <a href="#claims">Claims</a>
+    <a href="#growth">Growth</a>
+    <a href="#regulatory">Regulatory</a>
+    <a href="#opportunity">Opportunity</a>
+  </div>
+  <div class="nav-badge">Confidential · March 2026</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Space Insurance Market · Deep Dive Analysis · 2026</div>
+  <h1>The <span>$4.43 Billion</span> Market<br>That Needs Better Data</h1>
+  <p>A comprehensive analysis of the global space insurance market — regional breakdown, coverage types, underwriter landscape, claims history, and growth trajectory — and why survivable data recording is the market's most urgent unmet need.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="val">$4.43B</span>
+      <div class="lbl">Global Market (2026)</div>
+      <div class="sub">▲ 9.1% CAGR</div>
+    </div>
+    <div class="hero-stat">
+      <span class="val">$6.23B</span>
+      <div class="lbl">Projected by 2030</div>
+      <div class="sub">▲ Research & Markets</div>
+    </div>
+    <div class="hero-stat">
+      <span class="val">$995M</span>
+      <div class="lbl">Record Claims (2023)</div>
+      <div class="sub">▲ Worst year on record</div>
+    </div>
+    <div class="hero-stat">
+      <span class="val">~5%</span>
+      <div class="lbl">Satellite Failure Rate</div>
+      <div class="sub">▲ Consistent since 2000</div>
+    </div>
+    <div class="hero-stat">
+      <span class="val">165+</span>
+      <div class="lbl">Claims &gt;$10M (All Time)</div>
+      <div class="sub">▲ Data Center Dynamics</div>
+    </div>
+    <div class="hero-stat">
+      <span class="val">$332M</span>
+      <div class="lbl">TAM for Our Technology</div>
+      <div class="sub">▲ 7.5% value capture rate</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: MARKET OVERVIEW -->
+<hr class="divider" />
+<section class="section" id="overview">
+  <div class="section-header">
+    <div class="section-num">01 · MARKET OVERVIEW</div>
+    <h2>Global Space Insurance Market — Size & Growth</h2>
+    <p>The space insurance market has grown from a niche specialty product into a multi-billion dollar global industry, driven by the commercialization of space, rising satellite values, and the expansion of launch activity. The market is projected to grow from $4.43B in 2026 to $6.23B by 2030 at a 9.1% CAGR.</p>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card tall">
+      <h3>Market Size — Historical & Projected (USD Billions)</h3>
+      <div class="chart-sub">Global space insurance market value 2020–2030, with 9.1% CAGR projection</div>
+      <canvas id="marketSizeChart"></canvas>
+      <div class="insight-box">
+        <strong>Key Insight:</strong> The market nearly doubled between 2020 and 2026, driven by the commercial space boom. The 2023 claims crisis ($995M in claims vs. ~$550M in premiums) triggered premium rate increases that are now accelerating market growth.
+      </div>
+    </div>
+    <div class="chart-card tall">
+      <h3>Annual Premium vs. Claims — Loss Ratio Analysis</h3>
+      <div class="chart-sub">Estimated annual premiums vs. total claims paid, 2016–2024</div>
+      <canvas id="lossRatioChart"></canvas>
+      <div class="insight-box red">
+        <strong>Critical Finding:</strong> In 2019 and 2023, claims dramatically exceeded premiums — creating unsustainable loss ratios above 150%. This is the structural problem our technology solves: better post-failure data reduces claims disputes, accelerates settlements, and improves actuarial modeling.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Market Value (USD)</th>
+          <th>YoY Growth</th>
+          <th>Est. Premiums</th>
+          <th>Est. Claims</th>
+          <th>Loss Ratio</th>
+          <th>Key Event</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2020</td><td class="highlight">$2.30B</td><td class="green">+6.5%</td><td>$480M</td><td>$320M</td><td class="green">67%</td><td class="muted">COVID disruption; launch delays</td></tr>
+        <tr><td>2021</td><td class="highlight">$2.60B</td><td class="green">+13.0%</td><td>$510M</td><td>$280M</td><td class="green">55%</td><td class="muted">Commercial launch boom begins</td></tr>
+        <tr><td>2022</td><td class="highlight">$3.10B</td><td class="green">+19.2%</td><td>$530M</td><td>$450M</td><td class="orange">85%</td><td class="muted">Pleiades Neo loss (~$200M claim)</td></tr>
+        <tr><td>2023</td><td class="highlight">$3.50B</td><td class="green">+12.9%</td><td>$550M</td><td>$995M</td><td class="red">181%</td><td class="muted">Worst year on record; ViaSat-3 ($420M), Inmarsat I6 F2 ($348M)</td></tr>
+        <tr><td>2024</td><td class="highlight">$3.72B</td><td class="green">+6.3%</td><td>$590M</td><td>$500M+</td><td class="orange">85%+</td><td class="muted">Ongoing 2023 claims + new losses; SES mPower dispute ($472M)</td></tr>
+        <tr><td>2025</td><td class="highlight">$4.06B</td><td class="green">+9.1%</td><td>$640M</td><td>TBD</td><td class="muted">TBD</td><td class="muted">4 new London market entrants; capacity stabilizing</td></tr>
+        <tr><td>2026</td><td class="highlight">$4.43B</td><td class="green">+9.1%</td><td>$700M</td><td>TBD</td><td class="muted">TBD</td><td class="muted">Rate hardening continues; new commercial mandates</td></tr>
+        <tr><td>2027E</td><td class="highlight">$4.83B</td><td class="green">+9.1%</td><td>—</td><td>—</td><td class="muted">—</td><td class="muted">Projected</td></tr>
+        <tr><td>2028E</td><td class="highlight">$5.27B</td><td class="green">+9.1%</td><td>—</td><td>—</td><td class="muted">—</td><td class="muted">Projected</td></tr>
+        <tr><td>2029E</td><td class="highlight">$5.75B</td><td class="green">+9.1%</td><td>—</td><td>—</td><td class="muted">—</td><td class="muted">Projected</td></tr>
+        <tr><td>2030E</td><td class="highlight">$6.23B</td><td class="green">+8.3%</td><td>—</td><td>—</td><td class="muted">—</td><td class="muted">Research & Markets projection</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 2: REGIONAL -->
+<hr class="divider" />
+<section class="section" id="regional">
+  <div class="section-header">
+    <div class="section-num">02 · REGIONAL ANALYSIS</div>
+    <h2>Regional Market Breakdown — US, Germany & Singapore in Context</h2>
+    <p>North America dominates global space insurance, driven by the US commercial launch boom and the concentration of major underwriters. Europe holds 26% of the market, with Germany as the dominant continental hub. Asia-Pacific is the fastest-growing region, with Singapore serving as the Lloyd's of London gateway for the entire APAC market.</p>
+  </div>
+  <div class="grid-3">
+    <div class="chart-card">
+      <h3>Regional Market Share (2026)</h3>
+      <div class="chart-sub">% of $4.43B global market by geography</div>
+      <canvas id="regionalDonut"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Regional Market Value (USD Billions, 2026)</h3>
+      <div class="chart-sub">Absolute value by region</div>
+      <canvas id="regionalBar"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Regional Growth Rate Comparison</h3>
+      <div class="chart-sub">Estimated CAGR 2026–2030 by region</div>
+      <canvas id="regionalGrowth"></canvas>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;" class="grid-3">
+    <!-- US -->
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇺🇸</span>
+        <span class="reg-name">United States</span>
+        <span class="reg-status active">Primary Market</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Market Value (2026):</strong> ~$1.82B (41% share)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>CAGR (2026–2030):</strong> ~9.5% (above global avg)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Key Drivers:</strong> SpaceX Starlink expansion, NASA Artemis, DoD satellite programs, Space Force commercial-first policy</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Major Underwriters:</strong> AXA XL (New York/Paris), Starr Insurance, Marsh, Aon</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Regulatory:</strong> FAA Part 450 mandates third-party liability insurance for commercial launches; no mandatory in-orbit coverage</span></div>
+      <div class="insight-box">
+        <strong>Our Opportunity:</strong> US insurers are actively seeking technologies that reduce claims uncertainty. A US government contract + insurance partnership creates a dual-revenue entry.
+      </div>
+    </div>
+    <!-- Germany -->
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇩🇪</span>
+        <span class="reg-name">Germany</span>
+        <span class="reg-status developing">Strategic Target</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Market Value (2026):</strong> ~$380M (est. 33% of European share)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>CAGR (2026–2030):</strong> ~8.5% (aligned with European avg)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Key Drivers:</strong> €35B military space investment, Airbus D&S programs, DLR missions, OHB satellite manufacturing</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Major Underwriters:</strong> Munich Re (global leader), Allianz, Hannover Re</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Regulatory:</strong> Proposed Weltraumgesetz (Space Act) would mandate liability insurance up to €50M cap; currently no legal requirement</span></div>
+      <div class="insight-box green">
+        <strong>Our Opportunity:</strong> Munich Re and Allianz are the world's largest space reinsurers. A data partnership with either would provide global market validation and distribution leverage.
+      </div>
+    </div>
+    <!-- Singapore -->
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇸🇬</span>
+        <span class="reg-name">Singapore</span>
+        <span class="reg-status emerging">Emerging Hub</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Market Value (2026):</strong> ~$254M (est. 24% of APAC share)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>CAGR (2026–2030):</strong> ~12–14% (fastest-growing region)</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Key Drivers:</strong> NSAS launch (April 2026), STDP S$60M fund, Lloyd's Asia hub, ASEAN satellite expansion</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Major Underwriters:</strong> Lloyd's Asia (primary hub), AXA XL Asia, Tokio Marine, QBE</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Regulatory:</strong> New national space legislation under development; expected to include mandatory insurance requirements aligned with international conventions</span></div>
+      <div class="insight-box orange">
+        <strong>Our Opportunity:</strong> Singapore is the underwriting hub for all APAC space insurance. Entry via Lloyd's Asia creates access to the entire Asia-Pacific market from a single relationship.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <div class="chart-card">
+      <h3>Country-Level Market Value — US, Germany & Singapore vs. Global (2026–2030)</h3>
+      <div class="chart-sub">Projected market value growth in three target countries, USD Millions</div>
+      <canvas id="countryGrowthLine" style="max-height: 300px;"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: COVERAGE TYPES -->
+<hr class="divider" />
+<section class="section" id="coverage">
+  <div class="section-header">
+    <div class="section-num">03 · COVERAGE TYPE ANALYSIS</div>
+    <h2>Coverage Segments — Where the Risk Lives</h2>
+    <p>Space insurance is structured around three primary coverage phases: pre-launch (ground risk), launch (the highest-risk phase), and in-orbit (operational risk). Each phase has distinct risk profiles, claim frequencies, and relevance to survivable data recording technology.</p>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Coverage Type Distribution (2026)</h3>
+      <div class="chart-sub">% of total $4.43B market by coverage phase</div>
+      <canvas id="coverageDonut"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Coverage Type — Value & Claim Frequency</h3>
+      <div class="chart-sub">Market value vs. estimated annual claims frequency by coverage type</div>
+      <canvas id="coverageScatter"></canvas>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;" class="grid-3">
+    <div class="chart-card">
+      <h3>Pre-Launch Coverage</h3>
+      <div class="chart-sub">Ground risk during manufacturing, testing & transport</div>
+      <canvas id="preLaunchBar"></canvas>
+      <div class="insight-box orange">
+        <strong>$796M market (18%).</strong> Covers physical damage to spacecraft and launch vehicle during ground operations. Claims are relatively infrequent but can be large. Our technology relevance: <strong>moderate</strong> — data logging during ground testing provides baseline for anomaly detection.
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Launch Coverage</h3>
+      <div class="chart-sub">Lift-off through initial orbit insertion (typically 1 year)</div>
+      <canvas id="launchBar"></canvas>
+      <div class="insight-box red">
+        <strong>$1.82B market (41%).</strong> The highest-risk phase — launch vehicle failures, separation anomalies, and early orbit failures. Our technology is <strong>directly applicable</strong> here: the device survives the explosion and transmits data, enabling root cause analysis and supporting insurance claims.
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>In-Orbit Coverage</h3>
+      <div class="chart-sub">Operational satellite insurance throughout mission life</div>
+      <canvas id="inOrbitBar"></canvas>
+      <div class="insight-box green">
+        <strong>$1.77B market (40%).</strong> Covers anomalies and total losses during operational life. Market is shifting as large GEO satellites decline and LEO constellations grow. Our technology relevance: <strong>high</strong> — continuous data logging throughout mission life provides the forensic record insurers need for complex in-orbit anomaly claims.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Coverage Type</th>
+          <th>Market Value (2026)</th>
+          <th>% of Total</th>
+          <th>Typical Policy Duration</th>
+          <th>Average Claim Size</th>
+          <th>Our Technology Relevance</th>
+          <th>Key Insurers</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Pre-Launch</strong></td>
+          <td class="highlight">$796M</td>
+          <td>18%</td>
+          <td>Manufacturing through launch day</td>
+          <td class="orange">$15–50M</td>
+          <td class="orange">Moderate</td>
+          <td class="muted">AXA XL, Allianz, Munich Re</td>
+        </tr>
+        <tr>
+          <td><strong>Launch</strong></td>
+          <td class="highlight">$1,816M</td>
+          <td>41%</td>
+          <td>T-0 to 1 year post-separation</td>
+          <td class="red">$50–420M</td>
+          <td class="green">Very High</td>
+          <td class="muted">AXA XL, Lloyd's syndicates, Starr</td>
+        </tr>
+        <tr>
+          <td><strong>In-Orbit</strong></td>
+          <td class="highlight">$1,772M</td>
+          <td>40%</td>
+          <td>1–15 years (mission life)</td>
+          <td class="orange">$40–348M</td>
+          <td class="green">High</td>
+          <td class="muted">Munich Re, Swiss Re, Hannover Re</td>
+        </tr>
+        <tr>
+          <td><strong>Third-Party Liability</strong></td>
+          <td class="highlight">$44M</td>
+          <td>1%</td>
+          <td>Per launch / per year</td>
+          <td class="muted">Varies</td>
+          <td class="muted">Low</td>
+          <td class="muted">Mandatory in most jurisdictions</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 4: UNDERWRITERS -->
+<hr class="divider" />
+<section class="section" id="underwriters">
+  <div class="section-header">
+    <div class="section-num">04 · UNDERWRITER LANDSCAPE</div>
+    <h2>Key Underwriters — Who Writes the Risk</h2>
+    <p>The space insurance market is concentrated among a small number of specialist underwriters, with Lloyd's of London syndicates, Munich Re, AXA XL, and Swiss Re collectively accounting for the majority of global capacity. Understanding this landscape is essential for identifying the right insurance partners in each target geography.</p>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Underwriter Market Share — Estimated Capacity (2026)</h3>
+      <div class="chart-sub">Approximate share of global space insurance underwriting capacity</div>
+      <canvas id="underwriterPie"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Underwriter Capacity by Geography</h3>
+      <div class="chart-sub">Primary underwriting hubs and their geographic reach</div>
+      <canvas id="underwriterGeo"></canvas>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;" class="underwriter-grid">
+    <div class="uw-card">
+      <div class="uw-name">AXA XL</div>
+      <div class="uw-country">🇫🇷 France / 🇺🇸 United States</div>
+      <div class="uw-share">~20%</div>
+      <div class="uw-share-lbl">Estimated market share</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:80%"></div></div>
+      <div class="uw-detail">Self-described "leading underwriting team" in space insurance. Teams in New York and Paris with 125+ combined years of experience. Covers pre-launch, launch, in-orbit, and liability. Known for fastest claims payment — paid one claim within 7 days of a launch explosion. <strong>Key contact for US market entry.</strong></div>
+    </div>
+    <div class="uw-card">
+      <div class="uw-name">Munich Re</div>
+      <div class="uw-country">🇩🇪 Germany</div>
+      <div class="uw-share">~18%</div>
+      <div class="uw-share-lbl">Estimated market share</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:72%"></div></div>
+      <div class="uw-detail">World's largest reinsurer and a dominant force in space insurance. Provides both direct insurance and reinsurance capacity globally. Deep technical expertise in satellite risk assessment. <strong>Primary target for Germany market entry</strong> — a data partnership with Munich Re would provide global validation.</div>
+    </div>
+    <div class="uw-card">
+      <div class="uw-name">Lloyd's of London Syndicates</div>
+      <div class="uw-country">🇬🇧 United Kingdom / 🇸🇬 Singapore (Lloyd's Asia)</div>
+      <div class="uw-share">~25%</div>
+      <div class="uw-share-lbl">Estimated market share (collective)</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:100%"></div></div>
+      <div class="uw-detail">The Lloyd's market (multiple syndicates including Atrium Space Insurance Consortium, Beazley, and others) collectively represents the largest single source of space insurance capacity. Lloyd's Asia in Singapore is the primary hub for APAC space insurance. <strong>Key target for Singapore market entry.</strong></div>
+    </div>
+    <div class="uw-card">
+      <div class="uw-name">Swiss Re</div>
+      <div class="uw-country">🇨🇭 Switzerland</div>
+      <div class="uw-share">~12%</div>
+      <div class="uw-share-lbl">Estimated market share</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:48%"></div></div>
+      <div class="uw-detail">Major reinsurance capacity provider for space risks globally. Focuses primarily on reinsurance rather than direct coverage. Strong presence in European market alongside Munich Re. Increasingly focused on new space risks including LEO constellations and commercial human spaceflight.</div>
+    </div>
+    <div class="uw-card">
+      <div class="uw-name">Starr Insurance</div>
+      <div class="uw-country">🇺🇸 United States</div>
+      <div class="uw-share">~8%</div>
+      <div class="uw-share-lbl">Estimated market share</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:32%"></div></div>
+      <div class="uw-detail">Specialist US space insurer with strong relationships in the commercial launch sector. Particularly active in covering SpaceX and other New Space operators. Growing presence in the US government space insurance market.</div>
+    </div>
+    <div class="uw-card">
+      <div class="uw-name">Marsh / Aon / WTW</div>
+      <div class="uw-country">🇺🇸 United States / 🌍 Global</div>
+      <div class="uw-share">Brokers</div>
+      <div class="uw-share-lbl">Primary space insurance brokers</div>
+      <div class="uw-bar"><div class="uw-bar-fill" style="width:60%; background: linear-gradient(90deg, var(--accent5), var(--accent3));"></div></div>
+      <div class="uw-detail">The three dominant global insurance brokers for space risks. They do not underwrite risk but control access to underwriting capacity. <strong>Engaging a broker (particularly Marsh or Aon) is the most efficient route to reaching multiple underwriters simultaneously.</strong> WTW publishes the annual Insurance Marketplace Realities report for space.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: CLAIMS HISTORY -->
+<hr class="divider" />
+<section class="section" id="claims">
+  <div class="section-header">
+    <div class="section-num">05 · CLAIMS HISTORY</div>
+    <h2>Major Claims — The Data Problem in Action</h2>
+    <p>Every major space vehicle catastrophic failure in history — from the NASA Space Shuttle disasters to today's commercial satellite losses — shares a common thread: the root cause was either unknown, disputed, or took years to determine at enormous cost. This is the structural problem our technology solves. The following timeline documents the industry's most significant losses, beginning with the two events that defined the problem.</p>
+  </div>
+
+  <!-- SHUTTLE HISTORICAL CONTEXT BANNER -->
+  <div style="background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(123,97,255,0.08)); border: 1px solid rgba(255,107,107,0.3); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem;">
+    <div style="font-size: 0.7rem; font-weight: 800; color: var(--accent4); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.75rem;">&#9888; Historical Precedent — The Ultimate Cost of Missing Data</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem;">
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent4);">$11.2B</div>
+        <div style="font-size: 0.75rem; color: var(--text); font-weight: 600;">Space Shuttle Columbia (2003)</div>
+        <div style="font-size: 0.7rem; color: var(--muted);">Inflation-adjusted total cost</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent4);">$9.4B</div>
+        <div style="font-size: 0.75rem; color: var(--text); font-weight: 600;">Space Shuttle Challenger (1986)</div>
+        <div style="font-size: 0.7rem; color: var(--muted);">Inflation-adjusted total cost</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent5);">$20.6B</div>
+        <div style="font-size: 0.75rem; color: var(--text); font-weight: 600;">Combined Cost (2025 Dollars)</div>
+        <div style="font-size: 0.7rem; color: var(--muted);">Source: Wikipedia / Los Angeles Times / CBO</div>
+      </div>
+    </div>
+    <p style="font-size: 0.82rem; color: var(--muted); line-height: 1.6;">Neither Shuttle was commercially insured — these costs were borne entirely by the US government and taxpayers. The investigation into Columbia alone cost over <strong style="color: var(--text);">$500 million</strong> and took nearly two years, in large part because no survivable flight data recorder existed. The Columbia Accident Investigation Board (CAIB) explicitly noted the absence of real-time re-entry data as a critical gap. The commercial space market is now repeating this pattern at scale — with privately insured assets worth hundreds of millions each.</p>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card tall">
+      <h3>Major Claims by Year (USD Millions)</h3>
+      <div class="chart-sub">Largest individual insurance claims in space industry history</div>
+      <canvas id="claimsBar"></canvas>
+    </div>
+    <div style="padding: 0;">
+      <div class="claims-timeline">
+        <div class="claim-item">
+          <div class="claim-year">1986</div>
+          <div class="claim-title">Space Shuttle Challenger (STS-51L)</div>
+          <div class="claim-amount" style="color: var(--accent4);">$9.4B (2025 Dollars)</div>
+          <div class="claim-desc">Broke apart 73 seconds after launch due to O-ring failure in a solid rocket booster. 7 crew lost. The Rogers Commission investigation cost ~$175M (1986 dollars). 32-month program suspension followed. <strong style="color: var(--text);">No survivable data recorder existed.</strong> Root cause was determined only through painstaking physical debris analysis.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2003</div>
+          <div class="claim-title">Space Shuttle Columbia (STS-107)</div>
+          <div class="claim-amount" style="color: var(--accent4);">$11.2B (2025 Dollars)</div>
+          <div class="claim-desc">Disintegrated upon re-entry due to a foam strike to the wing during launch. 7 crew lost. The CAIB investigation cost $500M+. The largest debris search in US history covered 2,000 sq miles of Texas. <strong style="color: var(--text);">The CAIB explicitly cited the absence of real-time re-entry data as a critical investigative gap.</strong> A survivable recorder could have reduced a 2-year investigation to weeks.</div>
+        </div>
+        <div style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background: rgba(0,212,255,0.05); border-left: 3px solid var(--accent); border-radius: 4px; font-size: 0.75rem; color: var(--muted);">&#8595; Commercial insured losses begin — the same data gap, now at private sector cost</div>
+        <div class="claim-item">
+          <div class="claim-year">2016</div>
+          <div class="claim-title">SpaceX Falcon 9 — Amos-6 Satellite</div>
+          <div class="claim-amount">$200M</div>
+          <div class="claim-desc">Pre-launch pad explosion destroyed Spacecom's Amos-6 communications satellite. Root cause: helium pressure vessel failure in second stage. Data was limited; investigation took months.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2019</div>
+          <div class="claim-title">Vega VV15 — Falcon Eye 1</div>
+          <div class="claim-amount">$411M</div>
+          <div class="claim-desc">UAE military observation satellite lost in Vega rocket failure. Largest single claim at that time. Fairing separation anomaly; investigation required extensive telemetry reconstruction.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2019</div>
+          <div class="claim-title">Industry-Wide Loss Year</div>
+          <div class="claim-amount">$788M total</div>
+          <div class="claim-desc">Total claims overwhelmed total premiums (~$500M). Multiple satellite anomalies including power subsystem failures. Loss ratio exceeded 150% — triggered market hardening.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2020</div>
+          <div class="claim-title">SiriusXM SXM-7 Satellite</div>
+          <div class="claim-amount">$225M</div>
+          <div class="claim-desc">Failed during in-orbit testing despite successful launch. Power system anomaly. Declared total loss. Highlights the gap between launch success and operational readiness.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2020</div>
+          <div class="claim-title">Vega VV17 — Two Satellites Lost</div>
+          <div class="claim-amount">~$400M</div>
+          <div class="claim-desc">Two satellites with combined value ~$400M lost in Vega launch failure. Upper stage anomaly. Combined with SXM-7, 2020 was another difficult year for insurers.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2022</div>
+          <div class="claim-title">Vega VV22 — Pleiades Neo Satellites</div>
+          <div class="claim-amount">~$200M</div>
+          <div class="claim-desc">Two Pleiades Neo Earth imaging satellites lost. Third Vega failure in three years. Triggered serious questions about Vega reliability and underwriting appetite for Arianespace launches.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2023</div>
+          <div class="claim-title">ViaSat-3 Americas</div>
+          <div class="claim-amount">$420M</div>
+          <div class="claim-desc">Largest single space insurance claim in history. Antenna deployment failure left satellite operating at &lt;10% capacity. Viasat declared total loss. Root cause: manufacturing defect in reflector assembly — took months to determine.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2023</div>
+          <div class="claim-title">Inmarsat I6 F2</div>
+          <div class="claim-amount">$348M</div>
+          <div class="claim-desc">"Unprecedented" power subsystem anomaly during orbit-raising. 5.47-ton satellite with 15-year planned lifespan declared total loss. Root cause investigation ongoing for over a year.</div>
+        </div>
+        <div class="claim-item">
+          <div class="claim-year">2025</div>
+          <div class="claim-title">SES mPower Satellites (Disputed)</div>
+          <div class="claim-amount">$472M (disputed)</div>
+          <div class="claim-desc">SES filed $472M claim for performance defects on mPower satellites. Insurers resisting, arguing it is a "forecast not an observed loss." Highlights the critical need for objective post-failure data to resolve disputes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="opportunity-callout" style="margin-top: 2rem;">
+    <h3>The Data Gap That Costs the Industry Billions</h3>
+    <p>Every disputed claim in this timeline — from the ViaSat-3 reflector failure to the SES mPower dispute — stems from the same root cause: insufficient post-failure data. Our technology directly addresses this gap. With a survivable data recorder installed, the root cause of every failure becomes determinable, claims are resolved faster, and the industry's loss ratio improves structurally.</p>
+  </div>
+</section>
+
+<!-- SECTION 6: GROWTH DRIVERS -->
+<hr class="divider" />
+<section class="section" id="growth">
+  <div class="section-header">
+    <div class="section-num">06 · GROWTH DRIVERS & RESTRAINTS</div>
+    <h2>What Is Driving the Market — And What Holds It Back</h2>
+    <p>The space insurance market's 9.1% CAGR is driven by a combination of structural demand growth (more launches, higher asset values) and market hardening (rising premiums following record losses). Understanding these dynamics is essential for positioning survivable data recording as a market enabler.</p>
+  </div>
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-bottom: 1rem; font-size: 1rem; color: var(--accent3);">▲ Growth Drivers</h3>
+      <div class="driver-grid">
+        <div class="driver-card">
+          <div class="driver-icon">🚀</div>
+          <div class="driver-title">Commercial Launch Boom</div>
+          <div class="driver-desc">317 orbital launches in 2025, up from ~100 in 2018. SpaceX, Rocket Lab, and new entrants driving unprecedented launch frequency. Each launch represents a new insurance event.</div>
+          <span class="driver-impact high">Impact: Very High</span>
+        </div>
+        <div class="driver-card">
+          <div class="driver-icon">🛰️</div>
+          <div class="driver-title">Rising Asset Values</div>
+          <div class="driver-desc">Next-generation satellites (ViaSat-3, SES mPower, Inmarsat I6) are worth $400M–$1B+ each. Higher values drive higher premiums and larger potential claims.</div>
+          <span class="driver-impact high">Impact: Very High</span>
+        </div>
+        <div class="driver-card">
+          <div class="driver-icon">🏛️</div>
+          <div class="driver-title">Regulatory Mandates</div>
+          <div class="driver-desc">Germany's proposed Weltraumgesetz, Singapore's new space legislation, and expanding FAA requirements are creating new mandatory insurance markets globally.</div>
+          <span class="driver-impact high">Impact: High</span>
+        </div>
+        <div class="driver-card">
+          <div class="driver-icon">🌐</div>
+          <div class="driver-title">New Space Entrants</div>
+          <div class="driver-desc">Commercial human spaceflight, asteroid mining, lunar missions, and on-orbit servicing create entirely new risk categories that require new insurance products.</div>
+          <span class="driver-impact high">Impact: High</span>
+        </div>
+        <div class="driver-card">
+          <div class="driver-icon">📈</div>
+          <div class="driver-title">Premium Rate Hardening</div>
+          <div class="driver-desc">Record losses in 2019 and 2023 triggered significant premium rate increases. Higher rates increase total market value even without growth in the number of insured assets.</div>
+          <span class="driver-impact medium">Impact: Medium</span>
+        </div>
+        <div class="driver-card">
+          <div class="driver-icon">🤝</div>
+          <div class="driver-title">New Capacity Entering</div>
+          <div class="driver-desc">4 new London market entrants in 2025. Increased competition is expanding total available capacity, enabling more missions to be insured at competitive rates.</div>
+          <span class="driver-impact medium">Impact: Medium</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom: 1rem; font-size: 1rem; color: var(--accent4);">▼ Market Restraints</h3>
+      <div class="driver-grid">
+        <div class="driver-card" style="border-color: rgba(255,107,107,0.2);">
+          <div class="driver-icon">📉</div>
+          <div class="driver-title">LEO Constellation Shift</div>
+          <div class="driver-desc">Thousands of small, low-value LEO satellites (Starlink, OneWeb) are often uninsured. Premium volume has not kept pace with launch volume. Market structure is changing fundamentally.</div>
+          <span class="driver-impact high">Restraint: High</span>
+        </div>
+        <div class="driver-card" style="border-color: rgba(255,107,107,0.2);">
+          <div class="driver-icon">📊</div>
+          <div class="driver-title">Actuarial Data Scarcity</div>
+          <div class="driver-desc">New satellite designs and new launch vehicles lack historical performance data, making risk pricing difficult. Some insurers are withdrawing from new technology categories entirely.</div>
+          <span class="driver-impact high">Restraint: High</span>
+        </div>
+        <div class="driver-card" style="border-color: rgba(255,107,107,0.2);">
+          <div class="driver-icon">⚖️</div>
+          <div class="driver-title">Claims Disputes</div>
+          <div class="driver-desc">Complex multi-year disputes (SES mPower, ViaSat-3) tie up capital and create uncertainty. Insurers are becoming more conservative in coverage terms as a result.</div>
+          <span class="driver-impact medium">Restraint: Medium</span>
+        </div>
+        <div class="driver-card" style="border-color: rgba(255,107,107,0.2);">
+          <div class="driver-icon">🌌</div>
+          <div class="driver-title">Space Debris Risk</div>
+          <div class="driver-desc">Growing debris population increases collision risk for insured satellites. Insurers are adding debris exclusions and sustainability requirements to policies, limiting coverage scope.</div>
+          <span class="driver-impact medium">Restraint: Medium</span>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-top: 1.5rem;">
+        <h3>Market Drivers vs. Restraints — Impact Weighting</h3>
+        <div class="chart-sub">Relative impact of growth drivers and market restraints on 2026–2030 CAGR</div>
+        <canvas id="driversChart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: REGULATORY -->
+<hr class="divider" />
+<section class="section" id="regulatory">
+  <div class="section-header">
+    <div class="section-num">07 · REGULATORY ENVIRONMENT</div>
+    <h2>Regulatory Landscape — The Mandate Opportunity</h2>
+    <p>Aviation's universal adoption of black boxes was driven by regulatory mandate, not voluntary adoption. The same dynamic is emerging in space insurance. Germany's proposed Weltraumgesetz, Singapore's new space legislation, and evolving US FAA requirements are creating the conditions for mandatory survivable data recording requirements.</p>
+  </div>
+  <div class="grid-3">
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇺🇸</span>
+        <span class="reg-name">United States</span>
+        <span class="reg-status active">Most Developed</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>FAA Part 450:</strong> Mandates third-party liability insurance for all commercial launches. No mandatory in-orbit coverage.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>NASA Requirements:</strong> Mission assurance standards for government payloads include data recording requirements, but no survivable standard exists.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Space Force:</strong> Commercial-first policy and new Space Systems Command standards are creating de facto data recording requirements for commercial suppliers.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Liability Convention:</strong> US is a signatory; government indemnifies commercial operators up to $500M for third-party claims.</span></div>
+      <div class="insight-box">
+        <strong>Mandate Pathway:</strong> A single high-profile US failure with unrecoverable data — especially involving loss of life in commercial human spaceflight — could trigger rapid regulatory action requiring survivable data recorders on all licensed vehicles.
+      </div>
+    </div>
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇩🇪</span>
+        <span class="reg-name">Germany</span>
+        <span class="reg-status developing">Developing</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Current Status:</strong> No legal requirement for space insurance or government indemnification. Operators rely on voluntary coverage.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Proposed Weltraumgesetz:</strong> 2024 proposal would mandate liability insurance or financial guarantee. Operator liability capped at 10% of annual turnover, max €50M.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>ESA Standards:</strong> ECSS (European Cooperation for Space Standardization) standards apply to all ESA-funded missions, including data recording requirements.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Military Space:</strong> €35B military space investment (2026–2030) will likely include data recording requirements for classified satellite programs.</span></div>
+      <div class="insight-box green">
+        <strong>Mandate Pathway:</strong> The Weltraumgesetz, once enacted, will create mandatory insurance requirements for all German space operators — and Munich Re / Allianz will likely require survivable data recording as a condition of coverage for high-value missions.
+      </div>
+    </div>
+    <div class="reg-card">
+      <div class="reg-country">
+        <span class="reg-flag">🇸🇬</span>
+        <span class="reg-name">Singapore</span>
+        <span class="reg-status emerging">Emerging</span>
+      </div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>NSAS Launch (April 2026):</strong> New National Space Agency of Singapore will establish national space policy, including insurance and liability frameworks.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>New Space Legislation:</strong> Singapore is developing a comprehensive space law expected to include mandatory insurance requirements aligned with international conventions.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>Lloyd's Asia Hub:</strong> Singapore's position as Lloyd's primary APAC hub means insurance standards set here effectively apply across the region.</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text"><strong>STDP Program:</strong> S$60M Space Technology Development Programme actively funds technologies that improve space safety and mission assurance.</span></div>
+      <div class="insight-box orange">
+        <strong>Mandate Pathway:</strong> Singapore's new space legislation is being written now — there is a window to engage NSAS and advocate for survivable data recording as a standard requirement, establishing a regulatory mandate before competitors are aware of the opportunity.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <div class="chart-card">
+      <h3>Regulatory Maturity vs. Market Opportunity — Target Countries</h3>
+      <div class="chart-sub">Positioning of US, Germany, and Singapore on regulatory development vs. market size axes</div>
+      <canvas id="regulatoryBubble" style="max-height: 300px;"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8: OPPORTUNITY -->
+<hr class="divider" />
+<section class="section" id="opportunity">
+  <div class="section-header">
+    <div class="section-num">08 · THE OPPORTUNITY</div>
+    <h2>Our Technology as a Space Insurance Market Enabler</h2>
+    <p>The space insurance market's structural problems — disputed claims, poor actuarial data, and unsustainable loss ratios — are all symptoms of the same root cause: the absence of survivable post-failure data. Our technology directly addresses this gap, creating value for every participant in the insurance value chain.</p>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Value Chain — Where Our Technology Creates Value</h3>
+      <div class="chart-sub">Impact on each participant in the space insurance ecosystem</div>
+      <canvas id="valueChainBar"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>TAM Capture — Insurance Vertical (2026–2030)</h3>
+      <div class="chart-sub">Projected revenue from space insurance vertical at 7.5% value capture rate</div>
+      <canvas id="tamCaptureLine"></canvas>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;" class="grid-3">
+    <div class="chart-card">
+      <div class="driver-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🏢</div>
+      <h3>For Space Operators</h3>
+      <div class="chart-sub">Hardware buyers — launch providers, satellite manufacturers</div>
+      <div class="reg-item" style="margin-top: 0.8rem;"><span class="reg-icon">◆</span><span class="reg-text">Faster root cause analysis reduces mission downtime</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Objective data supports insurance claims, reducing disputes</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">May qualify for premium discounts from insurers</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Demonstrates safety commitment to regulators and customers</span></div>
+    </div>
+    <div class="chart-card">
+      <div class="driver-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🏦</div>
+      <h3>For Space Insurers</h3>
+      <div class="chart-sub">Financial buyers — underwriters and reinsurers</div>
+      <div class="reg-item" style="margin-top: 0.8rem;"><span class="reg-icon">◆</span><span class="reg-text">Objective post-failure data resolves disputed claims faster</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Continuous telemetry improves actuarial modeling accuracy</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Reduces litigation costs on complex multi-year disputes</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Can mandate installation as a condition of coverage for high-value missions</span></div>
+    </div>
+    <div class="chart-card">
+      <div class="driver-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🏛️</div>
+      <h3>For Regulators</h3>
+      <div class="chart-sub">Policy drivers — FAA, NSAS, Weltraumgesetz</div>
+      <div class="reg-item" style="margin-top: 0.8rem;"><span class="reg-icon">◆</span><span class="reg-text">Enables evidence-based safety regulation</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Supports liability attribution under international conventions</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Provides data for space debris mitigation enforcement</span></div>
+      <div class="reg-item"><span class="reg-icon">◆</span><span class="reg-text">Creates accountability framework for commercial human spaceflight</span></div>
+    </div>
+  </div>
+
+  <div class="opportunity-callout" style="margin-top: 2rem;">
+    <h3>The Aviation Analogy — A Regulatory Mandate Is Inevitable</h3>
+    <p>Aviation black boxes were not adopted voluntarily. They were mandated by the FAA following the 1958 Aviation Safety Act, after a series of crashes where the cause could not be determined. The space industry is at an identical inflection point. The ViaSat-3 and Inmarsat I6 F2 failures of 2023 — combined with the emerging commercial human spaceflight sector — are creating the political and regulatory conditions for a space black box mandate. Our technology is positioned to be that standard.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom: 0.5rem;"><strong>Space Insurance Market Deep Dive Analysis</strong> · Prepared by <strong>Manus AI</strong> · March 2026</p>
+  <p style="margin-bottom: 1rem;">Confidential — Investor Briefing · For internal use only</p>
+  <p><strong>Sources:</strong> Research and Markets (2026) · market.us (2026) · MarketReportsWorld (2026) · Data Center Dynamics (2024) · AXA XL (2025) · WTW Insurance Marketplace Realities 2026 · Hogan Lovells (2025) · Insurance Journal (2023) · SpaceNews (2019) · Allianz Commercial Risk Report · Two Birds (2026) · Slingshot Aerospace (2024)</p>
+  <p style="margin-top: 0.5rem;"><a href="index.html">← Back to VC Pitch Deck</a> · <a href="methodology_and_sources.pdf">Methodology & Sources Report</a></p>
+</footer>
+
+<script>
+// ─── CHART DEFAULTS ───────────────────────────────────────────────
+Chart.defaults.color = '#8899aa';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+
+const ACCENT  = '#00d4ff';
+const ACCENT2 = '#7b61ff';
+const ACCENT3 = '#00e5a0';
+const ACCENT4 = '#ff6b6b';
+const ACCENT5 = '#ffb347';
+const SURFACE = '#112240';
+
+// ─── 1. MARKET SIZE CHART ─────────────────────────────────────────
+new Chart(document.getElementById('marketSizeChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020','2021','2022','2023','2024','2025','2026','2027E','2028E','2029E','2030E'],
+    datasets: [{
+      label: 'Market Value ($B)',
+      data: [2.30, 2.60, 3.10, 3.50, 3.72, 4.06, 4.43, 4.83, 5.27, 5.75, 6.23],
+      backgroundColor: (ctx) => ctx.dataIndex >= 6 ? 'rgba(0,212,255,0.35)' : 'rgba(0,212,255,0.7)',
+      borderColor: ACCENT,
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'B' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ─── 2. LOSS RATIO CHART ──────────────────────────────────────────
+new Chart(document.getElementById('lossRatioChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+    datasets: [
+      { label: 'Premiums ($M)', data: [450,470,500,500,480,510,530,550,590], backgroundColor: 'rgba(0,229,160,0.6)', borderRadius: 3 },
+      { label: 'Claims ($M)', data: [280,200,590,788,320,280,450,995,500], backgroundColor: 'rgba(255,107,107,0.6)', borderRadius: 3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'M' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// ─── 3. REGIONAL DONUT ────────────────────────────────────────────
+new Chart(document.getElementById('regionalDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['North America (41%)', 'Europe (26%)', 'Asia-Pacific (24%)', 'Middle East & Africa (9%)'],
+    datasets: [{ data: [41,26,24,9], backgroundColor: [ACCENT, ACCENT2, ACCENT3, ACCENT5], borderWidth: 2, borderColor: SURFACE }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, cutout: '65%' }
+});
+
+// ─── 4. REGIONAL BAR ──────────────────────────────────────────────
+new Chart(document.getElementById('regionalBar'), {
+  type: 'bar',
+  data: {
+    labels: ['North America', 'Europe', 'Asia-Pacific', 'ME & Africa'],
+    datasets: [{ label: 'Market Value ($B)', data: [1.82, 1.15, 1.06, 0.40], backgroundColor: [ACCENT, ACCENT2, ACCENT3, ACCENT5], borderRadius: 4 }]
+  },
+  options: {
+    responsive: true, indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'B' } }, y: { grid: { display: false } } }
+  }
+});
+
+// ─── 5. REGIONAL GROWTH ───────────────────────────────────────────
+new Chart(document.getElementById('regionalGrowth'), {
+  type: 'bar',
+  data: {
+    labels: ['Asia-Pacific', 'North America', 'Global Avg', 'Europe', 'ME & Africa'],
+    datasets: [{ label: 'CAGR 2026–2030 (%)', data: [13.0, 9.5, 9.1, 8.5, 7.0], backgroundColor: [ACCENT3, ACCENT, '#ffffff33', ACCENT2, ACCENT5], borderRadius: 4 }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
+  }
+});
+
+// ─── 6. COUNTRY GROWTH LINE ───────────────────────────────────────
+new Chart(document.getElementById('countryGrowthLine'), {
+  type: 'line',
+  data: {
+    labels: ['2026','2027E','2028E','2029E','2030E'],
+    datasets: [
+      { label: '🇺🇸 United States', data: [1820,1993,2183,2390,2616], borderColor: ACCENT, backgroundColor: 'rgba(0,212,255,0.1)', fill: true, tension: 0.4, pointRadius: 4 },
+      { label: '🇩🇪 Germany', data: [380,412,447,485,526], borderColor: ACCENT2, backgroundColor: 'rgba(123,97,255,0.1)', fill: true, tension: 0.4, pointRadius: 4 },
+      { label: '🇸🇬 Singapore', data: [254,287,324,366,414], borderColor: ACCENT3, backgroundColor: 'rgba(0,229,160,0.1)', fill: true, tension: 0.4, pointRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'M' } }, x: { grid: { display: false } } }
+  }
+});
+
+// ─── 7. COVERAGE DONUT ────────────────────────────────────────────
+new Chart(document.getElementById('coverageDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Launch (41%)', 'In-Orbit (40%)', 'Pre-Launch (18%)', 'Third-Party Liability (1%)'],
+    datasets: [{ data: [41,40,18,1], backgroundColor: [ACCENT4, ACCENT3, ACCENT5, ACCENT2], borderWidth: 2, borderColor: SURFACE }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, cutout: '65%' }
+});
+
+// ─── 8. COVERAGE SCATTER ──────────────────────────────────────────
+new Chart(document.getElementById('coverageScatter'), {
+  type: 'bubble',
+  data: {
+    datasets: [
+      { label: 'Launch', data: [{ x: 41, y: 8, r: 18 }], backgroundColor: 'rgba(255,107,107,0.6)', borderColor: ACCENT4 },
+      { label: 'In-Orbit', data: [{ x: 40, y: 5, r: 16 }], backgroundColor: 'rgba(0,229,160,0.6)', borderColor: ACCENT3 },
+      { label: 'Pre-Launch', data: [{ x: 18, y: 2, r: 10 }], backgroundColor: 'rgba(255,179,71,0.6)', borderColor: ACCENT5 },
+      { label: 'Liability', data: [{ x: 1, y: 1, r: 4 }], backgroundColor: 'rgba(123,97,255,0.6)', borderColor: ACCENT2 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.x + '% of market, ' + ctx.raw.y + ' claims/yr est.' } } },
+    scales: {
+      x: { title: { display: true, text: '% of Total Market' }, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v + '%' } },
+      y: { title: { display: true, text: 'Est. Annual Claims (Major)' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  }
+});
+
+// ─── 9–11. COVERAGE PHASE BARS ────────────────────────────────────
+['preLaunchBar','launchBar','inOrbitBar'].forEach((id, i) => {
+  const labels = ['2026','2027E','2028E','2029E','2030E'];
+  const base = [796, 1816, 1772][i];
+  const cagr = [0.085, 0.091, 0.091][i];
+  const color = [ACCENT5, ACCENT4, ACCENT3][i];
+  const data = labels.map((_, j) => Math.round(base * Math.pow(1 + cagr, j)));
+  new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Value ($M)', data, backgroundColor: color + '99', borderColor: color, borderWidth: 1, borderRadius: 3 }] },
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'M' } }, x: { grid: { display: false } } }
+    }
+  });
+});
+
+// ─── 12. UNDERWRITER PIE ──────────────────────────────────────────
+new Chart(document.getElementById('underwriterPie'), {
+  type: 'doughnut',
+  data: {
+    labels: ["Lloyd's Syndicates (25%)", 'AXA XL (20%)', 'Munich Re (18%)', 'Swiss Re (12%)', 'Starr (8%)', 'Other (17%)'],
+    datasets: [{ data: [25,20,18,12,8,17], backgroundColor: [ACCENT, ACCENT2, ACCENT3, ACCENT4, ACCENT5, '#445566'], borderWidth: 2, borderColor: SURFACE }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, cutout: '60%' }
+});
+
+// ─── 13. UNDERWRITER GEO ──────────────────────────────────────────
+new Chart(document.getElementById('underwriterGeo'), {
+  type: 'bar',
+  data: {
+    labels: ['London/Lloyd\'s', 'US (AXA XL, Starr)', 'Germany (Munich Re)', 'Switzerland (Swiss Re)', 'Singapore (Lloyd\'s Asia)'],
+    datasets: [{ label: 'Estimated Capacity Share (%)', data: [35, 28, 18, 12, 7], backgroundColor: [ACCENT, ACCENT2, ACCENT3, ACCENT5, ACCENT4], borderRadius: 4 }]
+  },
+  options: {
+    responsive: true, indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: { x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v + '%' } }, y: { grid: { display: false } } }
+  }
+});
+
+// ─── 14. CLAIMS BAR ───────────────────────────────────────────────
+new Chart(document.getElementById('claimsBar'), {
+  type: 'bar',
+  data: {
+    labels: ['Challenger\nSTS-51L\n(1986)', 'Columbia\nSTS-107\n(2003)', 'Falcon 9\nAmos-6\n(2016)', 'Vega VV15\nFalcon Eye 1\n(2019)', 'SiriusXM\nSXM-7\n(2020)', 'Vega VV17\n2 Satellites\n(2020)', 'Pleiades Neo\nVV22\n(2022)', 'ViaSat-3\nAmericas\n(2023)', 'Inmarsat\nI6 F2\n(2023)', 'SES mPower\n(Disputed)\n(2025)'],
+    datasets: [{ label: 'Cost / Claim Amount ($M)', data: [9400, 11200, 200, 411, 225, 400, 200, 420, 348, 472], backgroundColor: ['rgba(255,50,50,0.75)','rgba(255,50,50,0.85)','rgba(255,107,107,0.6)','rgba(255,107,107,0.7)','rgba(255,179,71,0.6)','rgba(255,107,107,0.6)','rgba(255,179,71,0.6)','rgba(255,107,107,0.9)','rgba(255,107,107,0.8)','rgba(123,97,255,0.6)'], borderColor: ['#ff3232','#ff3232',ACCENT4,ACCENT4,ACCENT5,ACCENT4,ACCENT5,ACCENT4,ACCENT4,ACCENT2], borderWidth: 2, borderRadius: 4 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v >= 1000 ? '$' + (v/1000).toFixed(1) + 'B' : '$' + v + 'M' } }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } }
+  }
+});
+
+// ─── 15. DRIVERS CHART ────────────────────────────────────────────
+new Chart(document.getElementById('driversChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Commercial Launch Volume', 'Rising Asset Values', 'Regulatory Mandates', 'New Space Entrants', 'Premium Rate Hardening', 'New Capacity'],
+    datasets: [
+      { label: 'Growth Drivers', data: [95, 85, 75, 70, 65, 55], backgroundColor: 'rgba(0,229,160,0.15)', borderColor: ACCENT3, pointBackgroundColor: ACCENT3 },
+      { label: 'Restraints', data: [60, 30, 20, 40, 35, 25], backgroundColor: 'rgba(255,107,107,0.1)', borderColor: ACCENT4, pointBackgroundColor: ACCENT4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { r: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { display: false }, pointLabels: { font: { size: 10 } } } }
+  }
+});
+
+// ─── 16. REGULATORY BUBBLE ────────────────────────────────────────
+new Chart(document.getElementById('regulatoryBubble'), {
+  type: 'bubble',
+  data: {
+    datasets: [
+      { label: '🇺🇸 United States', data: [{ x: 85, y: 1820, r: 22 }], backgroundColor: 'rgba(0,212,255,0.5)', borderColor: ACCENT },
+      { label: '🇩🇪 Germany', data: [{ x: 45, y: 380, r: 14 }], backgroundColor: 'rgba(123,97,255,0.5)', borderColor: ACCENT2 },
+      { label: '🇸🇬 Singapore', data: [{ x: 30, y: 254, r: 11 }], backgroundColor: 'rgba(0,229,160,0.5)', borderColor: ACCENT3 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': Regulatory Maturity ' + ctx.raw.x + '%, Market $' + ctx.raw.y + 'M' } } },
+    scales: {
+      x: { title: { display: true, text: 'Regulatory Maturity (%)' }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 0, max: 100 },
+      y: { title: { display: true, text: 'Market Value ($M, 2026)' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+    }
+  }
+});
+
+// ─── 17. VALUE CHAIN BAR ──────────────────────────────────────────
+new Chart(document.getElementById('valueChainBar'), {
+  type: 'bar',
+  data: {
+    labels: ['Space Operators', 'Launch Insurers', 'In-Orbit Insurers', 'Reinsurers', 'Regulators', 'Investors'],
+    datasets: [{ label: 'Value Created (Index 0–100)', data: [85, 90, 80, 70, 75, 65], backgroundColor: [ACCENT+'99', ACCENT4+'99', ACCENT3+'99', ACCENT2+'99', ACCENT5+'99', '#88aacc99'], borderRadius: 4 }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, max: 100, ticks: { callback: v => v } }, x: { grid: { display: false } } }
+  }
+});
+
+// ─── 18. TAM CAPTURE LINE ─────────────────────────────────────────
+new Chart(document.getElementById('tamCaptureLine'), {
+  type: 'line',
+  data: {
+    labels: ['2026','2027E','2028E','2029E','2030E'],
+    datasets: [
+      { label: 'Insurance TAM ($M)', data: [332, 362, 395, 431, 467], borderColor: ACCENT, backgroundColor: 'rgba(0,212,255,0.08)', fill: true, tension: 0.4, pointRadius: 4 },
+      { label: 'Our Revenue (Base Case, $M)', data: [0, 2, 8, 18, 28], borderColor: ACCENT3, backgroundColor: 'rgba(0,229,160,0.08)', fill: true, tension: 0.4, pointRadius: 4, borderDash: [5,3] }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: { legend: { position: 'top' } },
+    scales: { y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => '$' + v + 'M' } }, x: { grid: { display: false } } }
+  }
+});
+</script>
+</body>
+</html>

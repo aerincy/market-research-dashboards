@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      var correct = 'immortaldata';
+      var entered = sessionStorage.getItem('dashboard_auth');
+      if (entered !== correct) {
+        var attempt = prompt('This dashboard is password protected.\n\nPlease enter the password to continue:');
+        if (attempt !== correct) {
+          document.documentElement.innerHTML = '<div style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#070b14;color:#f1f5f9;font-size:1.2rem;">Access denied. Please refresh the page and enter the correct password.</div>';
+          throw new Error('Access denied');
+        }
+        sessionStorage.setItem('dashboard_auth', correct);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Investor Briefing — Survivable Data Recorder Technology</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:        #070b14;
+      --bg-card:   #0f1623;
+      --bg-card2:  #161f30;
+      --blue:      #3b82f6;
+      --teal:      #14b8a6;
+      --amber:     #f59e0b;
+      --purple:    #a855f7;
+      --green:     #22c55e;
+      --red:       #ef4444;
+      --indigo:    #6366f1;
+      --text:      #f1f5f9;
+      --muted:     #94a3b8;
+      --border:    #1e293b;
+      --script-bg: #0c1220;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.65;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(7,11,20,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 2rem;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-weight: 700; font-size: 0.95rem; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand span { color: var(--blue); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.82rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: var(--blue);
+      font-size: 0.7rem; font-weight: 600;
+      padding: 0.2rem 0.7rem; border-radius: 999px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #070b14 0%, #0f1a3a 45%, #070b14 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 400px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: var(--blue);
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 0.3rem 1rem; border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.15; max-width: 820px; margin: 0 auto 1.25rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--blue); }
+    .hero-sub {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--muted); max-width: 620px;
+      margin: 0 auto 2rem;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 3rem;
+      flex-wrap: wrap; margin-top: 2.5rem;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-val {
+      font-size: 2rem; font-weight: 800;
+      color: var(--blue); line-height: 1;
+    }
+    .hero-stat-lbl {
+      font-size: 0.75rem; color: var(--muted);
+      margin-top: 0.3rem; letter-spacing: 0.05em;
+    }
+    .divider { width: 1px; height: 48px; background: var(--border); align-self: center; }
+
+    /* ── SECTION WRAPPER ── */
+    .section {
+      max-width: 1280px; margin: 0 auto;
+      padding: 3.5rem 1.5rem;
+    }
+    .section + .section { padding-top: 0; }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.35);
+      color: var(--blue); font-size: 0.78rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title-text {
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .section-divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 0 1.5rem;
+    }
+
+    /* ── SCRIPT PANEL ── */
+    .script-panel {
+      background: var(--script-bg);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-left: 3px solid var(--blue);
+      border-radius: 10px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .script-panel::before {
+      content: '🎙 PRESENTER SCRIPT';
+      display: block;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.14em; color: var(--blue);
+      margin-bottom: 0.75rem;
+    }
+    .script-panel p {
+      font-size: 0.92rem; color: #c8d8f0;
+      line-height: 1.8;
+    }
+    .script-panel p + p { margin-top: 0.75rem; }
+    .script-highlight { color: var(--text); font-weight: 600; }
+    .script-note {
+      display: inline-block;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: var(--amber);
+      font-size: 0.72rem; font-weight: 600;
+      padding: 0.15rem 0.6rem; border-radius: 4px;
+      margin-left: 0.4rem;
+    }
+
+    /* ── KPI GRID ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--kc, var(--blue));
+      border-radius: 10px; padding: 1.25rem 1.1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+    .kpi-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.45rem; }
+    .kpi-value { font-size: 1.9rem; font-weight: 800; color: var(--kc, var(--blue)); line-height: 1; margin-bottom: 0.25rem; }
+    .kpi-sub { font-size: 0.75rem; color: var(--muted); }
+    .kpi-badge { display: inline-block; background: rgba(34,197,94,0.12); color: var(--green); font-size: 0.68rem; font-weight: 600; padding: 0.12rem 0.5rem; border-radius: 999px; margin-top: 0.35rem; }
+
+    /* ── CHART CARDS ── */
+    .chart-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 1.5rem; }
+    .chart-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .chart-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.4rem;
+    }
+    .chart-card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .chart-desc { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.1rem; }
+    .chart-wrap { position: relative; height: 270px; }
+    .chart-wrap-tall { position: relative; height: 330px; }
+
+    /* ── FUNNEL ── */
+    .funnel { display: flex; flex-direction: column; gap: 6px; padding: 0.5rem 0; }
+    .funnel-row { display: flex; align-items: center; }
+    .funnel-lbl-l { width: 110px; text-align: right; padding-right: 0.9rem; font-size: 0.75rem; font-weight: 700; color: var(--text); }
+    .funnel-bar-wrap { flex: 1; }
+    .funnel-bar {
+      height: 52px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.95rem; color: #fff;
+      transition: opacity 0.2s;
+    }
+    .funnel-bar:hover { opacity: 0.85; }
+    .funnel-lbl-r { width: 170px; padding-left: 0.9rem; font-size: 0.75rem; color: var(--muted); }
+
+    /* ── COUNTRY TABLE ── */
+    .tbl-wrap { overflow-x: auto; }
+    table.ctbl { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    table.ctbl th {
+      background: var(--bg-card2); color: var(--muted);
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+      padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    table.ctbl td { padding: 0.8rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.ctbl tr:last-child td { border-bottom: none; }
+    table.ctbl tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag { display: inline-block; font-size: 0.67rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 999px; margin: 0.1rem; }
+    .tag-b { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .tag-t { background: rgba(20,184,166,0.15); color: var(--teal); }
+    .tag-a { background: rgba(245,158,11,0.15); color: var(--amber); }
+
+    /* ── MILESTONE TIMELINE ── */
+    .timeline { position: relative; padding-left: 2.2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, var(--blue), var(--purple));
+    }
+    .tl-item {
+      position: relative; margin-bottom: 1.1rem;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.2rem;
+    }
+    .tl-item::before {
+      content: ''; position: absolute; left: -1.85rem; top: 1.1rem;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--tlc, var(--blue)); border: 2px solid var(--bg);
+    }
+    .tl-head { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+    .tl-num { background: rgba(59,130,246,0.15); color: var(--blue); font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.5rem; border-radius: 999px; }
+    .tl-t { font-weight: 700; font-size: 0.9rem; }
+    .tl-time { font-size: 0.7rem; color: var(--muted); margin-left: auto; }
+    .tl-body { font-size: 0.8rem; color: var(--muted); }
+    .tl-val { display: inline-block; margin-top: 0.35rem; background: rgba(34,197,94,0.1); color: var(--green); font-size: 0.7rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; }
+
+    /* ── CREDIT FOOTER ── */
+    .credit-bar {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 2rem 2rem;
+      text-align: center;
+    }
+    .credit-bar p { font-size: 0.78rem; color: var(--muted); line-height: 1.8; }
+    .credit-bar strong { color: var(--text); }
+    .credit-bar a { color: var(--blue); text-decoration: none; }
+
+    @media (max-width: 700px) {
+      .chart-grid-2, .chart-grid-3 { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; }
+      .divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══════════════════════════════════════ -->
+<nav>
+  <a class="nav-brand" href="#hero">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+    <span>DataNeuron</span> Investor Briefing
+  </a>
+  <ul class="nav-links">
+    <li><a href="#opportunity">Opportunity</a></li>
+    <li><a href="#tam">TAM</a></li>
+    <li><a href="#sam">SAM</a></li>
+    <li><a href="#som">SOM</a></li>
+    <li><a href="#insurance">Insurance</a></li>
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#milestones">Milestones</a></li>
+  </ul>
+  <span class="nav-badge">Confidential · March 2026</span>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════ -->
+<section id="hero" class="hero">
+  <div class="hero-eyebrow">Pre-Revenue Deep-Tech · Space &amp; Defense</div>
+  <h1>The <em>Black Box</em> for the<br>New Space Economy</h1>
+  <p class="hero-sub">A distributed, blast- and heat-resistant survivable data recorder system — proven in a real-world launch explosion — for space vehicles, autonomous platforms, and future off-world infrastructure.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-val">$2.18B</div>
+      <div class="hero-stat-lbl">Total Addressable Market</div>
+    </div>
+    <div class="divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">$852M</div>
+      <div class="hero-stat-lbl">Serviceable Addressable Market</div>
+    </div>
+    <div class="divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">5,000°F</div>
+      <div class="hero-stat-lbl">Tested Thermal Resistance</div>
+    </div>
+    <div class="divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">2034</div>
+      <div class="hero-stat-lbl">Patent Protection Through</div>
+    </div>
+    <div class="divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">✓</div>
+      <div class="hero-stat-lbl">Real-World Launch Explosion POC</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SECTION 1 — OPPORTUNITY ══════════════════ -->
+<hr class="section-divider" />
+<div id="opportunity" class="section">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title-text">The Problem &amp; Market Opportunity</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      <span class="script-highlight">Thank you for your time today.</span> I want to start with a simple question: when a $500 million satellite fails in orbit, or a commercial launch vehicle explodes on the pad, what data survives to tell us why?
+    </p>
+    <p>
+      Today, the answer is almost nothing. The space industry is experiencing a historic boom — <span class="script-highlight">317 orbital launches in 2025 alone</span> — yet it still has no equivalent of the aviation black box. Every catastrophic failure is, in data terms, a total loss. That means the same failures repeat, insurance premiums stay high, and the industry cannot learn at the speed it needs to.
+    </p>
+    <p>
+      We have built the solution. Our technology is a distributed system of hardened "data neurons" — placed inline throughout a vehicle's systems — that survive blast, fire, and atmospheric reentry, then transmit their data via GPS after an incident. <span class="script-highlight">We have already proven this in a real-world launch explosion.</span> The black box survived. The data was recovered. <span class="script-note">PAUSE — let that land</span>
+    </p>
+    <p>
+      The market opportunity this creates spans five verticals and a combined TAM of <span class="script-highlight">$2.18 billion</span>, with an immediate, serviceable market of <span class="script-highlight">$852 million</span> across the United States, Germany, and Singapore.
+    </p>
+  </div>
+
+  <!-- SHUTTLE HISTORICAL PRECEDENT CALLOUT -->
+  <div style="background: linear-gradient(135deg, rgba(239,68,68,0.07), rgba(99,102,241,0.07)); border: 1px solid rgba(239,68,68,0.25); border-radius: 16px; padding: 1.75rem 2rem; margin-bottom: 2rem;">
+    <div style="font-size: 0.68rem; font-weight: 800; color: #ef4444; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem;">&#9888; Historical Precedent &mdash; The Cost of Not Having This Technology</div>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 1.25rem;">
+      <div style="text-align: center; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); border-radius: 12px; padding: 1.2rem;">
+        <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Space Shuttle Challenger &mdash; 1986</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #ef4444;">$9.4B</div>
+        <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem;">Inflation-adjusted total cost</div>
+        <div style="font-size: 0.7rem; color: #f59e0b; margin-top: 0.4rem; font-weight: 600;">Investigation: $175M &bull; 32-month suspension</div>
+      </div>
+      <div style="text-align: center; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); border-radius: 12px; padding: 1.2rem;">
+        <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Space Shuttle Columbia &mdash; 2003</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #ef4444;">$11.2B</div>
+        <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem;">Inflation-adjusted total cost</div>
+        <div style="font-size: 0.7rem; color: #f59e0b; margin-top: 0.4rem; font-weight: 600;">Investigation: $500M+ &bull; 2-year program halt</div>
+      </div>
+      <div style="text-align: center; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; padding: 1.2rem;">
+        <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Combined Government Cost</div>
+        <div style="font-size: 2.2rem; font-weight: 800; color: #6366f1;">$20.6B</div>
+        <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem;">Borne entirely by US taxpayers</div>
+        <div style="font-size: 0.7rem; color: #22c55e; margin-top: 0.4rem; font-weight: 600;">Neither vehicle had a survivable data recorder</div>
+      </div>
+    </div>
+    <p style="font-size: 0.82rem; color: var(--muted); line-height: 1.65; border-top: 1px solid rgba(239,68,68,0.15); padding-top: 1rem;">The Columbia Accident Investigation Board (CAIB) explicitly cited the <strong style="color: var(--text);">absence of real-time re-entry data</strong> as a critical investigative gap. A survivable data recorder could have reduced a two-year, $500M+ investigation to weeks. The commercial space market is now repeating this pattern &mdash; with privately insured assets worth $200M&ndash;$1B each and no equivalent of the aviation black box. <strong style="color: #3b82f6;">This is the problem we have solved.</strong></p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kc:#3b82f6">
+      <div class="kpi-label">Total Addressable Market</div>
+      <div class="kpi-value">$2.18B</div>
+      <div class="kpi-sub">5 verticals · 3 time horizons</div>
+      <div class="kpi-badge">▲ Value Theory Methodology</div>
+    </div>
+    <div class="kpi-card" style="--kc:#14b8a6">
+      <div class="kpi-label">Serviceable Addressable Market</div>
+      <div class="kpi-value">$852M</div>
+      <div class="kpi-sub">US · Germany · Singapore</div>
+      <div class="kpi-badge">▲ 3 Target Geographies</div>
+    </div>
+    <div class="kpi-card" style="--kc:#f59e0b">
+      <div class="kpi-label">Serviceable Obtainable Market</div>
+      <div class="kpi-value">$42.6M</div>
+      <div class="kpi-sub">~5% SAM capture by Year 5</div>
+      <div class="kpi-badge">▲ $1.5–3M Immediate SOM</div>
+    </div>
+    <div class="kpi-card" style="--kc:#a855f7">
+      <div class="kpi-label">Vision TAM (2030–2040)</div>
+      <div class="kpi-value">$665M</div>
+      <div class="kpi-sub">Asteroid mining + Lunar economy</div>
+      <div class="kpi-badge">▲ Uncontested Future Market</div>
+    </div>
+    <div class="kpi-card" style="--kc:#22c55e">
+      <div class="kpi-label">Space Insurance Market (2026)</div>
+      <div class="kpi-value">$4.43B</div>
+      <div class="kpi-sub">Global; 9.1% CAGR to $6.23B by 2030</div>
+      <div class="kpi-badge">▲ Direct Buyer Category</div>
+    </div>
+    <div class="kpi-card" style="--kc:#ef4444">
+      <div class="kpi-label">Patent Protection</div>
+      <div class="kpi-value">2034</div>
+      <div class="kpi-sub">8-year runway to build flight heritage moat</div>
+      <div class="kpi-badge">▲ Proof-of-Concept Validated</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2 — TAM ══════════════════════════ -->
+<hr class="section-divider" />
+<div id="tam" class="section">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title-text">Total Addressable Market (TAM) — Value Theory Approach</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      We size our TAM using the <span class="script-highlight">Value Theory approach</span> — not a top-down market report, but a bottom-up calculation of the economic value our technology creates for each customer. This is the methodology that sophisticated deep-tech investors expect, because it forces us to justify every number.
+    </p>
+    <p>
+      The core logic is this: with <span class="script-highlight">317 orbital launches in 2025</span> and a historical failure rate of approximately 5%, the industry faces roughly 15 catastrophic failures per year. At an average mission value of $200 million, and assuming our technology can prevent or mitigate 25% of those losses, the annual value to space operators alone is <span class="script-highlight">$750 million</span>.
+    </p>
+    <p>
+      On top of that, the global space insurance market — valued at <span class="script-highlight">$4.43 billion in 2026</span> — benefits directly from our technology. Better post-failure data means faster claims, lower litigation costs, and more accurate actuarial models. We conservatively value that systemic benefit at 7.5% of the insurance market, or <span class="script-highlight">$332 million</span>. <span class="script-note">POINT to donut chart</span>
+    </p>
+    <p>
+      Add in the near-term terrestrial markets — autonomous shipping and unmanned submersibles — and the long-term Vision TAM in asteroid mining and the lunar economy, and you arrive at a combined TAM of <span class="script-highlight">$2.182 billion</span>.
+    </p>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <h3>TAM Composition by Vertical</h3>
+      <p class="chart-desc">Combined TAM of $2.182B across five market verticals, sized by economic value delivered.</p>
+      <div class="chart-wrap"><canvas id="tamDonut"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>TAM by Vertical — Value Breakdown (USD Millions)</h3>
+      <p class="chart-desc">Each bar represents the annual economic value the technology creates in that vertical.</p>
+      <div class="chart-wrap"><canvas id="tamBar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3 — SAM ══════════════════════════ -->
+<hr class="section-divider" />
+<div id="sam" class="section">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title-text">Serviceable Addressable Market (SAM) — By Country &amp; Segment</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      The SAM narrows our focus to what we can realistically serve with our current technology and resources. We have chosen three markets strategically: <span class="script-highlight">the United States</span> as our validation market, <span class="script-highlight">Germany</span> as our European anchor, and <span class="script-highlight">Singapore</span> as our Asia-Pacific gateway.
+    </p>
+    <p>
+      A critical insight that distinguishes our market model: we have identified <span class="script-highlight">two distinct buyer categories</span> in each geography. The first is space operators — launch providers, satellite manufacturers, government agencies — who buy our hardware to protect their vehicles. The second is <span class="script-highlight">space insurers</span> — Munich Re, AXA XL, Lloyd's Asia — who have a direct financial incentive to mandate, subsidize, or co-fund our installation in exchange for better claims data and lower premiums. <span class="script-note">POINT to grouped bar chart</span>
+    </p>
+    <p>
+      This dual-buyer dynamic is a powerful commercial accelerant. Insurers can drive adoption faster than any direct sales effort by making our device a condition of coverage — exactly the mechanism that made aviation black boxes universal. Our combined SAM across these three geographies is <span class="script-highlight">$852 million</span>.
+    </p>
+  </div>
+
+  <div class="chart-grid-2" style="margin-bottom:1.5rem;">
+    <div class="chart-card">
+      <h3>SAM by Country: Space Systems vs. Space Insurance</h3>
+      <p class="chart-desc">Two distinct buyer categories in each target market — operators and insurers.</p>
+      <div class="chart-wrap-tall"><canvas id="samGrouped"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>SAM Composition — Stacked by Country</h3>
+      <p class="chart-desc">Total SAM of $852M across three geographies.</p>
+      <div class="chart-wrap-tall"><canvas id="samStacked"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-card tbl-wrap">
+    <h3 style="margin-bottom:0.2rem;">SAM Detail by Country</h3>
+    <p class="chart-desc">Key customers, market value, and primary entry vectors for each target geography.</p>
+    <table class="ctbl">
+      <thead>
+        <tr>
+          <th>Country</th><th>Systems SAM</th><th>Insurance SAM</th><th>Total SAM</th>
+          <th>Key Customers</th><th>Primary Entry Vector</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🇺🇸 <strong>United States</strong></td>
+          <td>$350M</td><td>$136M</td><td><strong>$486M</strong></td>
+          <td>
+            <span class="tag tag-b">NASA</span><span class="tag tag-b">US Space Force</span>
+            <span class="tag tag-b">SpaceX</span><span class="tag tag-b">AXA XL</span><span class="tag tag-b">Starr</span>
+          </td>
+          <td>SBIR Phase II / OTA Contract</td>
+        </tr>
+        <tr>
+          <td>🇩🇪 <strong>Germany</strong></td>
+          <td>$150M</td><td>$86M</td><td><strong>$236M</strong></td>
+          <td>
+            <span class="tag tag-t">DLR</span><span class="tag tag-t">Airbus D&amp;S</span>
+            <span class="tag tag-t">OHB</span><span class="tag tag-t">Munich Re</span><span class="tag tag-t">Allianz</span>
+          </td>
+          <td>Airbus Supplier Qualification + DLR Innovation &amp; Transfer</td>
+        </tr>
+        <tr>
+          <td>🇸🇬 <strong>Singapore</strong></td>
+          <td>$50M</td><td>$80M</td><td><strong>$130M</strong></td>
+          <td>
+            <span class="tag tag-a">NSAS / OSTIn</span><span class="tag tag-a">EDB</span>
+            <span class="tag tag-a">Lloyd's Asia</span>
+          </td>
+          <td>STDP Grant (S$60M fund) + Local Partner</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 4 — SOM ══════════════════════════ -->
+<hr class="section-divider" />
+<div id="som" class="section">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title-text">Serviceable Obtainable Market (SOM) — Path to Revenue</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      The SOM is the number I want you to hold onto. In Years 1 to 2, our entire focus is on winning a single, high-credibility US government contract — an SBIR Phase II award or an Other Transaction Authority prototype agreement from NASA or US Space Force. That contract is worth <span class="script-highlight">$1.5 to $3 million</span> in direct revenue.
+    </p>
+    <p>
+      But its real value is not the revenue. It is the <span class="script-highlight">validation credential</span> that transforms us from an unproven startup into a flight-proven technology provider. That credential is the key that unlocks Airbus's supplier qualification process in Germany, the STDP grant program in Singapore, and the space insurance market globally.
+    </p>
+    <p>
+      By Year 5, with international market entry underway and the terrestrial adaptation complete, we project capturing approximately 5% of our SAM — a <span class="script-highlight">$42.6 million</span> revenue position. The three-scenario model on the right shows our conservative, base case, and optimistic projections. <span class="script-note">POINT to line chart</span>
+    </p>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <h3>TAM → SAM → SOM Funnel</h3>
+      <p class="chart-desc">Progressive market capture from theoretical maximum to near-term obtainable revenue.</p>
+      <div class="funnel" style="padding:1rem 0;">
+        <div class="funnel-row">
+          <div class="funnel-lbl-l">TAM</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:100%;background:linear-gradient(90deg,#3b82f6,#6366f1);">$2.182 Billion</div>
+          </div>
+          <div class="funnel-lbl-r">5 verticals · 3 time horizons</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-lbl-l">SAM</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:78%;background:linear-gradient(90deg,#14b8a6,#0ea5e9);">$852 Million</div>
+          </div>
+          <div class="funnel-lbl-r">US · Germany · Singapore</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-lbl-l">SOM Yr 3–5</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:50%;background:linear-gradient(90deg,#f59e0b,#f97316);">$42.6 Million</div>
+          </div>
+          <div class="funnel-lbl-r">~5% SAM capture</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-lbl-l">SOM Yr 1–2</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:24%;background:linear-gradient(90deg,#22c55e,#16a34a);">$1.5–3M</div>
+          </div>
+          <div class="funnel-lbl-r">First US gov't contract</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Projected Revenue Capture — Years 1 to 5</h3>
+      <p class="chart-desc">Conservative, base case, and optimistic revenue ramp from first government contract through international expansion.</p>
+      <div class="chart-wrap-tall"><canvas id="somLine"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 — INSURANCE ════════════════════ -->
+<hr class="section-divider" />
+<div id="insurance" class="section">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title-text">Space Insurance Market — Deep Dive</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      The space insurance market deserves special attention because it is both a <span class="script-highlight">customer segment and a market accelerant</span>. The global market is valued at <span class="script-highlight">$4.43 billion in 2026</span> and is growing at 9.1% CAGR, reaching $6.23 billion by 2030. North America holds 41% of that market, Europe 26%, and Asia-Pacific 24%.
+    </p>
+    <p>
+      The key insight is that space insurers are not passive participants in this market. They are active stakeholders with a direct financial incentive to improve post-failure data quality. Every catastrophic failure that goes unexplained costs them in litigation, extended claims processing, and inaccurate risk modeling. <span class="script-highlight">Our technology solves all three problems simultaneously.</span>
+    </p>
+    <p>
+      The aviation parallel is instructive and compelling: the International Civil Aviation Organization mandated flight data recorders after a series of unexplained crashes in the 1950s and 60s. As the space industry matures and regulatory bodies like the FAA, ESA, and the new Singapore NSAS develop safety frameworks, a similar mandate for survivable data recording is not merely possible — <span class="script-highlight">it is structurally inevitable.</span> <span class="script-note">PAUSE for emphasis</span>
+    </p>
+  </div>
+
+  <div class="chart-grid-3">
+    <div class="chart-card">
+      <h3>Global Space Insurance — Regional Share (2026)</h3>
+      <p class="chart-desc">North America leads at 41%; Europe 26%; Asia-Pacific 24%.</p>
+      <div class="chart-wrap"><canvas id="insRegional"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Coverage Type Breakdown</h3>
+      <p class="chart-desc">In-orbit insurance dominates at 40%, reflecting growing operational risk awareness.</p>
+      <div class="chart-wrap"><canvas id="insCoverage"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Space Insurance Market Growth (2025–2030)</h3>
+      <p class="chart-desc">Market grows from $4.06B (2025) to $6.23B (2030) at 9.1% CAGR.</p>
+      <div class="chart-wrap"><canvas id="insGrowth"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 — VISION TAM ═══════════════════ -->
+<hr class="section-divider" />
+<div id="vision" class="section">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title-text">Vision TAM — Asteroid Mining &amp; Lunar Economy (2030–2040)</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      I want to close the market sizing discussion with what I call the Vision TAM — not because it is speculative, but because it illustrates the <span class="script-highlight">structural inevitability</span> of our technology's role in the future of the off-world economy.
+    </p>
+    <p>
+      The asteroid mining market is projected to grow from $2.05 billion today to <span class="script-highlight">$5.42 billion by 2030</span> at a 21.4% CAGR. The commercial lunar economy is forecast to surpass <span class="script-highlight">$170 billion by 2040</span>. These are environments where a catastrophic failure of a mining vehicle or a lunar habitat is not just a financial loss — it is a mission-ending, potentially life-threatening event where physical investigation is impossible.
+    </p>
+    <p>
+      In these environments, our technology is not a component. It is <span class="script-highlight">foundational infrastructure</span>. The same regulatory dynamic that made black boxes mandatory in aviation will play out in the lunar economy — and we intend to be the established standard before that mandate arrives. Our Vision TAM from these two markets alone is <span class="script-highlight">$665 million</span>. <span class="script-note">POINT to dual-axis chart</span>
+    </p>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card">
+      <h3>Vision Market Components</h3>
+      <p class="chart-desc">Asteroid mining ($325M) and lunar economy ($340M) represent an uncontested $665M long-term opportunity.</p>
+      <div class="chart-wrap"><canvas id="visionBar"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Vision Market Growth Trajectory</h3>
+      <p class="chart-desc">Underlying market growth projections for asteroid mining and the lunar economy through 2040.</p>
+      <div class="chart-wrap"><canvas id="visionGrowth"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 7 — MILESTONES ═══════════════════ -->
+<hr class="section-divider" />
+<div id="milestones" class="section">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title-text">VC-Ready Milestones — De-Risking Roadmap</div>
+  </div>
+
+  <div class="script-panel">
+    <p>
+      Every milestone on this roadmap is designed to do one thing: <span class="script-highlight">systematically reduce investor risk</span> while expanding our addressable market. Each step is tangible, verifiable, and directly tied to a valuation inflection point.
+    </p>
+    <p>
+      We are raising <span class="script-highlight">$1.5 to $2 million in pre-seed funding</span> today. The use of proceeds is precise: secure a US government SBIR Phase II or OTA contract within 12 months. That contract is the single most important milestone in our entire roadmap — it is the validation credential that unlocks every subsequent market. <span class="script-note">WALK through timeline</span>
+    </p>
+    <p>
+      By Year 3, we will have flight heritage, a terrestrial adaptation underway, and our first international market entry in progress. By Year 5, we will have completed a <span class="script-highlight">Series A raise of $10 to $15 million</span> and established a foothold in all three target geographies. The Vision TAM engagement — a formal partnership with an asteroid mining or lunar economy company — closes the loop on the long-term narrative and sets up the next phase of growth.
+    </p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item" style="--tlc:#22c55e">
+      <div class="tl-head"><span class="tl-num">01</span><span class="tl-t">Secure Pre-Seed Funding</span><span class="tl-time">0–6 Months</span></div>
+      <div class="tl-body">$1.5M–$2M raised from targeted deep-tech/space VCs (Seraphim Space, Vsquared Ventures, JOIN Capital).</div>
+      <span class="tl-val">Risk Reduced: Financial runway secured for 18–24 months</span>
+    </div>
+    <div class="tl-item" style="--tlc:#3b82f6">
+      <div class="tl-head"><span class="tl-num">02</span><span class="tl-t">Win US Government Contract</span><span class="tl-time">6–12 Months</span></div>
+      <div class="tl-body">SBIR Phase II or OTA contract awarded at $1M+ value from NASA or US Space Force. The passport to all other markets.</div>
+      <span class="tl-val">Risk Reduced: Third-party technical validation; first revenue established</span>
+    </div>
+    <div class="tl-item" style="--tlc:#3b82f6">
+      <div class="tl-head"><span class="tl-num">03</span><span class="tl-t">First Hardware Delivery &amp; Integration</span><span class="tl-time">12–18 Months</span></div>
+      <div class="tl-body">Units pass government acceptance testing and are integrated into a partner platform. Flight heritage initiated.</div>
+      <span class="tl-val">Risk Reduced: Execution risk eliminated; flight heritage established</span>
+    </div>
+    <div class="tl-item" style="--tlc:#f59e0b">
+      <div class="tl-head"><span class="tl-num">04</span><span class="tl-t">Terrestrial Adaptation (Waterproofing)</span><span class="tl-time">18–24 Months</span></div>
+      <div class="tl-body">Prototype achieves IP68 certification in an accredited lab, unlocking autonomous shipping and UUV markets.</div>
+      <span class="tl-val">Risk Reduced: Unlocks $435M terrestrial TAM; revenue diversification</span>
+    </div>
+    <div class="tl-item" style="--tlc:#14b8a6">
+      <div class="tl-head"><span class="tl-num">05</span><span class="tl-t">International Market Entry (Germany / Singapore)</span><span class="tl-time">24–30 Months</span></div>
+      <div class="tl-body">First Letter of Intent or contract signed with a German entity (Airbus D&amp;S, DLR) or Singaporean entity (NSAS/STDP program).</div>
+      <span class="tl-val">Risk Reduced: Geographic risk diversified; EU/APAC market access established</span>
+    </div>
+    <div class="tl-item" style="--tlc:#a855f7">
+      <div class="tl-head"><span class="tl-num">06</span><span class="tl-t">Series A Fundraise</span><span class="tl-time">24–36 Months</span></div>
+      <div class="tl-body">$10M–$15M raised at a significant valuation step-up, funding production scale, international sales team, and operations.</div>
+      <span class="tl-val">Risk Reduced: Scaling capital secured</span>
+    </div>
+    <div class="tl-item" style="--tlc:#a855f7">
+      <div class="tl-head"><span class="tl-num">07</span><span class="tl-t">Vision Market Engagement</span><span class="tl-time">36–60 Months</span></div>
+      <div class="tl-body">Formal partnership or MOU signed with an asteroid mining or lunar economy company (e.g., AstroForge, Intuitive Machines).</div>
+      <span class="tl-val">Risk Reduced: Vision TAM validated; long-term market position established</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CREDIT FOOTER ════════════════════════════ -->
+<div class="credit-bar">
+  <p>
+    <strong>Market Analysis &amp; Dashboard Architecture:</strong> Manus AI &nbsp;|&nbsp;
+    <strong>Date:</strong> March 2026 &nbsp;|&nbsp;
+    <strong>Methodology:</strong> Value Theory Approach (TAM · SAM · SOM)
+  </p>
+  <p style="margin-top:0.5rem;">
+    <strong>Primary Data Sources:</strong>
+    Research and Markets (Space Insurance Market Report 2026) &nbsp;·&nbsp;
+    market.us (Space Insurance Market, CAGR 7.3%) &nbsp;·&nbsp;
+    MarketReportsWorld (Satellite Launch &amp; Space Insurance Market, Feb 2026) &nbsp;·&nbsp;
+    NASA NTRS — Jacklin (2019), Small-Satellite Mission Failure Rates &nbsp;·&nbsp;
+    Wikipedia (2025 in Spaceflight — 317 launches) &nbsp;·&nbsp;
+    RAND Corporation (Germany's €35B Military Space Investment, 2025) &nbsp;·&nbsp;
+    Yahoo Finance / Research and Markets (Asteroid Mining Market 2026–2035) &nbsp;·&nbsp;
+    AInvest / PwC (Lunar Economy &amp; US Space Dominance, 2025) &nbsp;·&nbsp;
+    Mordor Intelligence (Autonomous Ships Market) &nbsp;·&nbsp;
+    Transpire Insight (UUV Market) &nbsp;·&nbsp;
+    QY Research (Space Data Recorder Market) &nbsp;·&nbsp;
+    Government of Singapore — NSAS Establishment &amp; STDP Program &nbsp;·&nbsp;
+    Airbus (Global Supplier Network) &nbsp;·&nbsp;
+    NASA NTRS — Carraway &amp; Collins (2003), Survivable Failure Data Recorders for Spacecraft (NPO-20842)
+  </p>
+  <p style="margin-top:0.5rem; font-size:0.72rem;">
+    This document is confidential and intended solely for the use of the individual or entity to which it is addressed.
+    All market sizing figures are estimates based on publicly available data and Value Theory methodology.
+    They should not be construed as guarantees of future performance.
+  </p>
+</div>
+
+<!-- ══ CHART.JS ══════════════════════════════════ -->
+<script>
+const C = { blue:'#3b82f6', teal:'#14b8a6', amber:'#f59e0b', purple:'#a855f7', green:'#22c55e', indigo:'#6366f1', sky:'#0ea5e9' };
+const grid = 'rgba(255,255,255,0.06)';
+const tick  = '#64748b';
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+
+new Chart(document.getElementById('tamDonut'),{type:'doughnut',data:{labels:['Space Systems','Space Insurance','Terrestrial','Vision (Asteroid & Lunar)'],datasets:[{data:[750,332,435,665],backgroundColor:[C.blue,C.teal,C.amber,C.purple],borderColor:'#070b14',borderWidth:3,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{padding:14,boxWidth:11}},tooltip:{callbacks:{label:ctx=>` $${ctx.parsed}M (${((ctx.parsed/2182)*100).toFixed(1)}%)`}}}}});
+
+new Chart(document.getElementById('tamBar'),{type:'bar',data:{labels:['Space Systems','Space Insurance','Auto Shipping','UUVs','Asteroid Mining','Lunar Economy'],datasets:[{label:'TAM (USD M)',data:[750,332,138,297,325,340],backgroundColor:[C.blue,C.teal,C.amber,C.amber,C.purple,C.purple],borderRadius:6,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` $${ctx.parsed.x}M`}}},scales:{x:{grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}M`}},y:{grid:{display:false},ticks:{color:tick}}}}});
+
+new Chart(document.getElementById('samGrouped'),{type:'bar',data:{labels:['United States','Germany','Singapore'],datasets:[{label:'Space Systems SAM',data:[350,150,50],backgroundColor:C.blue,borderRadius:6},{label:'Space Insurance SAM',data:[136,86,80],backgroundColor:C.teal,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: $${ctx.parsed.y}M`}}},scales:{x:{grid:{display:false},ticks:{color:tick}},y:{grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}M`}}}}});
+
+new Chart(document.getElementById('samStacked'),{type:'bar',data:{labels:['United States','Germany','Singapore'],datasets:[{label:'Space Systems',data:[350,150,50],backgroundColor:C.blue,borderRadius:0},{label:'Space Insurance',data:[136,86,80],backgroundColor:C.teal,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{footer:items=>`Total: $${items.reduce((s,i)=>s+i.parsed.y,0)}M`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:tick}},y:{stacked:true,grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}M`}}}}});
+
+new Chart(document.getElementById('somLine'),{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[{label:'Conservative',data:[1.5,3,10,22,35],borderColor:C.teal,backgroundColor:'rgba(20,184,166,0.08)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:C.teal},{label:'Base Case',data:[2,5,15,30,42.6],borderColor:C.blue,backgroundColor:'rgba(59,130,246,0.08)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:C.blue},{label:'Optimistic',data:[3,8,20,38,60],borderColor:C.amber,backgroundColor:'rgba(245,158,11,0.06)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:C.amber}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: $${ctx.parsed.y}M`}}},scales:{x:{grid:{color:grid},ticks:{color:tick}},y:{grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}M`}}}}});
+
+new Chart(document.getElementById('insRegional'),{type:'doughnut',data:{labels:['North America (41%)','Europe (26%)','Asia-Pacific (24%)','MEA (9%)'],datasets:[{data:[41,26,24,9],backgroundColor:[C.blue,C.teal,C.amber,C.indigo],borderColor:'#070b14',borderWidth:3,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{padding:10,boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:ctx=>` $${(4430*ctx.parsed/100).toFixed(0)}M`}}}}});
+
+new Chart(document.getElementById('insCoverage'),{type:'doughnut',data:{labels:['In-Orbit (40%)','Launch (41%)','Pre-Launch (18%)','Other (4%)'],datasets:[{data:[40,41,18,4],backgroundColor:[C.blue,C.purple,C.teal,C.amber],borderColor:'#070b14',borderWidth:3,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'bottom',labels:{padding:10,boxWidth:10,font:{size:11}}},tooltip:{callbacks:{label:ctx=>` $${(4430*ctx.parsed/100).toFixed(0)}M`}}}}});
+
+new Chart(document.getElementById('insGrowth'),{type:'line',data:{labels:['2025','2026','2027','2028','2029','2030'],datasets:[{label:'Global Space Insurance Market',data:[4060,4430,4833,5273,5752,6230],borderColor:C.green,backgroundColor:'rgba(34,197,94,0.08)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:C.green}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` $${(ctx.parsed.y/1000).toFixed(2)}B`}}},scales:{x:{grid:{color:grid},ticks:{color:tick}},y:{grid:{color:grid},ticks:{color:tick,callback:v=>`$${(v/1000).toFixed(1)}B`}}}}});
+
+new Chart(document.getElementById('visionBar'),{type:'bar',data:{labels:['Asteroid Mining (2030)','Lunar Economy (2040)'],datasets:[{label:'Underlying Market',data:[5420,170000],backgroundColor:'rgba(168,85,247,0.2)',borderColor:C.purple,borderWidth:2,borderRadius:6,yAxisID:'y1'},{label:'Vision TAM (Value Capture)',data:[325,340],backgroundColor:C.purple,borderRadius:6,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>` $${ctx.parsed.y}M`}}},scales:{x:{grid:{display:false},ticks:{color:tick}},y:{position:'left',grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}M`},title:{display:true,text:'Vision TAM (USD M)',color:'#94a3b8'}},y1:{position:'right',grid:{drawOnChartArea:false},ticks:{color:tick,callback:v=>v>=1000?`$${(v/1000).toFixed(0)}B`:`$${v}M`},title:{display:true,text:'Underlying Market',color:'#94a3b8'}}}}});
+
+new Chart(document.getElementById('visionGrowth'),{type:'line',data:{labels:['2025','2026','2027','2028','2029','2030','2035','2040'],datasets:[{label:'Asteroid Mining Market ($B)',data:[2.05,2.49,3.02,3.67,4.45,5.42,14.8,null],borderColor:C.amber,backgroundColor:'rgba(245,158,11,0.08)',fill:true,tension:0.4,pointRadius:4,yAxisID:'y'},{label:'Lunar Economy ($B)',data:[null,null,null,null,null,null,50,170],borderColor:C.purple,backgroundColor:'rgba(168,85,247,0.08)',fill:true,tension:0.4,pointRadius:4,spanGaps:true,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: $${ctx.parsed.y}B`}}},scales:{x:{grid:{color:grid},ticks:{color:tick}},y:{grid:{color:grid},ticks:{color:tick,callback:v=>`$${v}B`}}}}});
+</script>
+</body>
+</html>
