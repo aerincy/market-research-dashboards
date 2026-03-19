@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+(function(){
+  var p = prompt('This content is confidential. Please enter the access password:');
+  if(p !== 'immortaldata'){
+    document.documentElement.innerHTML = '<div style="font-family:sans-serif;text-align:center;padding:4rem;background:#060b14;color:#ef4444;min-height:100vh;"><h2>Access Denied</h2><p>Incorrect password. Please contact the document owner for access.</p></div>';
+  }
+})();
+</script>
 <head>
-  <script>
-    (function() {
-      var correct = 'immortaldata';
-      var entered = sessionStorage.getItem('dashboard_auth');
-      if (entered !== correct) {
-        var attempt = prompt('This dashboard is password protected.\n\nPlease enter the password to continue:');
-        if (attempt !== correct) {
-          document.documentElement.innerHTML = '<div style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#060b18;color:#e8f4f8;font-size:1.2rem;">Access denied. Please refresh the page and enter the correct password.</div>';
-          throw new Error('Access denied');
-        }
-        sessionStorage.setItem('dashboard_auth', correct);
-      }
-    })();
-  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Space Insurance Market — Deep Dive Analysis</title>
