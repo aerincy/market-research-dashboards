@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sources & References — IDI Market Research</title>
+  <style>
+    :root {
+      --bg:      #060b18;
+      --surface: #0d1a2e;
+      --border:  rgba(255,255,255,0.08);
+      --accent:  #00d4ff;
+      --accent2: #7b61ff;
+      --accent3: #00e5a0;
+      --text:    #e8f4f8;
+      --muted:   #7a9bb5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,11,24,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 60px;
+    }
+    .nav-brand {
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      font-size: 0.8rem; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 900px; margin: 0 auto;
+      padding: 4rem 2rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 0.25rem 0.75rem; border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: 2rem; font-weight: 800;
+      line-height: 1.2; margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 0.95rem; color: var(--muted);
+      max-width: 680px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 900px; margin: 0 auto;
+      padding: 2.5rem 2rem 4rem;
+    }
+
+    /* ── SECTION ── */
+    .ref-section {
+      margin-bottom: 3rem;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      width: 28px; height: 28px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.25);
+      color: var(--accent);
+      font-size: 0.72rem; font-weight: 800;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 1rem; font-weight: 700;
+      color: var(--text);
+    }
+    .section-body {
+      font-size: 0.88rem; color: var(--muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.75;
+    }
+
+    /* ── TABLE ── */
+    .ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-bottom: 1rem;
+    }
+    .ref-table th {
+      text-align: left;
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .ref-table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+      color: var(--muted);
+    }
+    .ref-table tr:last-child td { border-bottom: none; }
+    .ref-table td strong { color: var(--text); }
+    .ref-table a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .ref-table a:hover { text-decoration: underline; }
+
+    /* ── REFERENCE LIST ── */
+    .ref-list { list-style: none; }
+    .ref-item {
+      display: flex; gap: 1rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.84rem;
+    }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-badge {
+      flex-shrink: 0;
+      min-width: 28px; height: 22px;
+      background: rgba(123,97,255,0.12);
+      border: 1px solid rgba(123,97,255,0.25);
+      color: var(--accent2);
+      font-size: 0.65rem; font-weight: 800;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
+    .ref-text { color: var(--muted); line-height: 1.6; }
+    .ref-text strong { color: var(--text); }
+    .ref-text a { color: var(--accent); text-decoration: none; }
+    .ref-text a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── DISCLAIMER ── */
+    .disclaimer {
+      background: rgba(0,212,255,0.04);
+      border: 1px solid rgba(0,212,255,0.12);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
+    .disclaimer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">IDI · Market Research</a>
+  <div class="nav-links">
+    <a href="blackboxeconomy.html">IDI Investor Briefing</a>
+    <a href="space_insurance.html">Space Insurance Deep Dive</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Data Transparency</div>
+  <h1>Sources &amp; References</h1>
+  <p>This page documents the data sources, market reports, regulatory filings, and historical records referenced across the IDI investor materials and market research dashboards. All market sizing figures are estimates based on publicly available data and Value Theory methodology.</p>
+</div>
+
+<main>
+
+  <div class="disclaimer">
+    <strong>Methodology Note:</strong> The IDI Total Addressable Market (TAM) of $2.18 billion is a proprietary bottom-up calculation using the Value Theory approach. It is not derived from a single market report, but from a bottom-up assessment of the economic value IDI's technology creates for each customer segment. The full methodology is available to qualified investors upon request.
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">Space Systems &amp; Launch Data</div>
+    </div>
+    <p class="section-body">The foundational data for space systems analysis relies on recent launch frequencies and historical failure rates. The baseline figure of 317 orbital launches in 2025 is drawn from Wikipedia's comprehensive tracking of the year in spaceflight, corroborated by Payload Space's January 2026 report. The historical failure rate of approximately 5% for small satellites is based on NASA NTRS research, consistent with public disclosures from major operators. The concept of survivable data recorders for spacecraft, forming the prior art for IDI's technology, is documented in a 2003 NASA NTRS paper.</p>
+    <table class="ref-table">
+      <thead><tr><th>Data Point</th><th>Primary Source</th><th>Corroborating Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>317 orbital launches in 2025</strong></td><td>Wikipedia, "2025 in Spaceflight"</td><td>Payload Space (Jan 2026)</td></tr>
+        <tr><td><strong>~5% satellite failure rate</strong></td><td>NASA NTRS — Jacklin (2019)</td><td>Forbes (June 2019)</td></tr>
+        <tr><td><strong>Spacecraft data recorders (Prior Art)</strong></td><td>NASA NTRS — Carraway &amp; Collins (2003)</td><td>N/A</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">Space Insurance Market Dynamics</div>
+    </div>
+    <p class="section-body">The space insurance market represents both a key customer segment and a structural driver for IDI's technology. The global market is valued at $4.43 billion in 2026, with a projected 9.1% CAGR reaching $6.23 billion by 2030, with North America (41%), Europe (26%), and Asia-Pacific (24%) as the primary regional segments. The market experienced significant volatility in 2023, with $995 million in total payouts against approximately $550 million in premiums. Despite these losses, the market is stabilizing with four new London market participants entering in 2025.</p>
+    <table class="ref-table">
+      <thead><tr><th>Market Metric</th><th>Figure</th><th>Primary Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Market Size (2026)</strong></td><td>$4.43 Billion</td><td>Research and Markets (2026)</td></tr>
+        <tr><td><strong>Projected Growth (2030)</strong></td><td>$6.23 Billion (9.1% CAGR)</td><td>Research and Markets (2026)</td></tr>
+        <tr><td><strong>2023 Total Claims</strong></td><td>$995 Million</td><td>Slingshot Aerospace (2024)</td></tr>
+        <tr><td><strong>2019 Total Claims</strong></td><td>$788 Million</td><td>SpaceNews (2023)</td></tr>
+        <tr><td><strong>Historical Major Claims</strong></td><td>165+ claims &gt;$10M</td><td>Data Center Dynamics (2024)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">Specific Historical Failures &amp; Claims</div>
+    </div>
+    <p class="section-body">The financial impact of catastrophic failures underscores the necessity of survivable data systems. The Space Shuttle Challenger disaster (1986) carried an inflation-adjusted cost of $9.4 billion, while the Columbia loss (2003) reached $11.2 billion inflation-adjusted, with the CAIB investigation costing over $500 million. In the commercial sector, recent high-profile insurance claims highlight the escalating value of orbital assets and the critical need for post-failure data recovery.</p>
+    <table class="ref-table">
+      <thead><tr><th>Incident</th><th>Year</th><th>Claim / Cost</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Space Shuttle Challenger</strong></td><td>1986</td><td>$9.4B (inflation-adj.)</td><td>Los Angeles Times; Wikipedia</td></tr>
+        <tr><td><strong>Space Shuttle Columbia</strong></td><td>2003</td><td>$11.2B (inflation-adj.); CAIB $500M+</td><td>LA Times; CAIB Report</td></tr>
+        <tr><td><strong>ViaSat-3 Americas</strong></td><td>2023</td><td>$420M claim</td><td>CNBC; SpaceNews</td></tr>
+        <tr><td><strong>Inmarsat I6 F2</strong></td><td>2023</td><td>$348M claim</td><td>SEC Filing; Slingshot Aerospace</td></tr>
+        <tr><td><strong>SES mPower Satellites</strong></td><td>2024–2025</td><td>$472M (disputed)</td><td>Space Intel Report; SatNews</td></tr>
+        <tr><td><strong>Vega VV15 / Falcon Eye 1</strong></td><td>2019</td><td>$411–$415M claim</td><td>Wikipedia; SpaceNews</td></tr>
+        <tr><td><strong>SiriusXM SXM-7</strong></td><td>2020</td><td>$225M claim</td><td>CNBC; SEC Filing</td></tr>
+        <tr><td><strong>SpaceX Falcon 9 / Amos-6</strong></td><td>2016</td><td>$196–$200M claim</td><td>Artemis.bm; SpaceNews</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">International Policy &amp; Regulation</div>
+    </div>
+    <p class="section-body">Regulatory frameworks play a critical role in the adoption of safety technologies. The historical precedent for mandated safety recording is found in the aviation sector, where flight data recorders were mandated between 1958 and 1965 following a series of unexplained accidents. In the commercial space sector, the FAA mandates financial responsibility and third-party liability insurance under 14 CFR Part 450. Germany has committed to a €35 billion military space investment (2026–2030), while Singapore has allocated an S$60 million fund to its Space Technology Development Programme (STDP).</p>
+    <table class="ref-table">
+      <thead><tr><th>Policy / Investment</th><th>Detail</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Aviation Black Box Mandate</strong></td><td>Mandated 1958–1965 following unexplained crashes</td><td>National Museum of Australia; Pilot Institute</td></tr>
+        <tr><td><strong>FAA Part 450</strong></td><td>Commercial launch financial responsibility requirements</td><td>Federal Aviation Administration (ecfr.gov)</td></tr>
+        <tr><td><strong>Germany Military Space</strong></td><td>€35 billion investment (2026–2030)</td><td>RAND Corporation; Defense News (2025)</td></tr>
+        <tr><td><strong>Singapore STDP</strong></td><td>S$60 million fund; NSAS establishment</td><td>OSTIn Singapore; Singapore EDB (2025)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">Adjacent &amp; Future Markets (Vision TAM)</div>
+    </div>
+    <p class="section-body">IDI's Vision TAM encompasses near-term terrestrial applications and long-term space economy opportunities. The UUV market is projected to reach $8.72 billion by 2030, while the autonomous shipping sector represents a rapidly growing adjacent market. The long-term Vision TAM includes the asteroid mining market, projected to grow from $2.05 billion in 2025 to $5.42 billion by 2030 at a 21.4% CAGR, and the commercial lunar economy, forecast to surpass $170 billion by 2040.</p>
+    <table class="ref-table">
+      <thead><tr><th>Market</th><th>Projection</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Unmanned Underwater Vehicles (UUV)</strong></td><td>$8.72B by 2030</td><td>MarketsandMarkets (Dec 2025)</td></tr>
+        <tr><td><strong>Autonomous Shipping</strong></td><td>Growing at ~8.9% CAGR</td><td>Mordor Intelligence (2025–2026)</td></tr>
+        <tr><td><strong>Asteroid Mining</strong></td><td>$2.05B (2025) → $5.42B (2030); 21.4% CAGR</td><td>The Business Research Company (2026)</td></tr>
+        <tr><td><strong>Lunar Economy</strong></td><td>&gt;$170B by 2040</td><td>PwC / The Space Review (2024)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FULL REFERENCE LIST -->
+  <div class="ref-section">
+    <div class="section-header">
+      <div class="section-num" style="background:rgba(0,229,160,0.1);border-color:rgba(0,229,160,0.25);color:var(--accent3);">✦</div>
+      <div class="section-title">Complete Reference List</div>
+    </div>
+    <ul class="ref-list">
+      <li class="ref-item"><div class="ref-badge">1</div><div class="ref-text"><strong>317 Orbital Launches in 2025:</strong> Wikipedia, "2025 in Spaceflight." <a href="https://en.wikipedia.org/wiki/2025_in_spaceflight" target="_blank">en.wikipedia.org/wiki/2025_in_spaceflight</a>. Corroborated by Payload Space, "2025 Orbital Launch Attempts by Country," January 2026.</div></li>
+      <li class="ref-item"><div class="ref-badge">2</div><div class="ref-text"><strong>~5% Satellite Failure Rate:</strong> NASA NTRS — Jacklin, S.A. (2019), "Small-Satellite Mission Failure Rates." <a href="https://ntrs.nasa.gov/api/citations/20190002705/downloads/20190002705.pdf" target="_blank">ntrs.nasa.gov</a>. Also: Forbes, "SpaceX Reveals That 5% Of Its Starlink Satellites Have Failed In Orbit," June 2019.</div></li>
+      <li class="ref-item"><div class="ref-badge">3</div><div class="ref-text"><strong>Survivable Data Recorders for Spacecraft (Prior Art):</strong> NASA NTRS — Carraway, J. &amp; Collins, J. (2003), "Survivable Failure Data Recorders for Spacecraft," NPO-20842. <a href="https://ntrs.nasa.gov" target="_blank">ntrs.nasa.gov</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">4</div><div class="ref-text"><strong>Space Insurance Market Size, CAGR &amp; Regional Shares:</strong> Research and Markets, "Space Insurance Market Report 2026." <a href="https://www.researchandmarkets.com/reports/6167144/space-insurance-market-report" target="_blank">researchandmarkets.com</a>. Corroborated by market.us (2026) and MarketReportsWorld (February 2026).</div></li>
+      <li class="ref-item"><div class="ref-badge">5</div><div class="ref-text"><strong>2023 Record Claims ($995M) &amp; Loss Ratio Crisis:</strong> Slingshot Aerospace, "State of Satellite Deployments &amp; Orbital Operations – 2023," April 2024. <a href="https://www.slingshot.space/news/state-of-satellite-deployments-and-orbital-operations-2023" target="_blank">slingshot.space</a>. Also: Satellite Today, May 1, 2024.</div></li>
+      <li class="ref-item"><div class="ref-badge">6</div><div class="ref-text"><strong>2019 Industry-Wide Loss Year ($788M Claims):</strong> SpaceNews, "Connecting the Dots | Double Whammy for Space Insurance," October 2023. <a href="https://spacenews.com/connecting-the-dots-double-whammy-for-space-insurance/" target="_blank">spacenews.com</a>. Also: SatNews, August 4, 2019.</div></li>
+      <li class="ref-item"><div class="ref-badge">7</div><div class="ref-text"><strong>4 New London Market Entrants in 2025; Market Stabilization:</strong> WTW (Willis Towers Watson), "Insurance Marketplace Realities 2026 – Aviation &amp; Space," October 2025. <a href="https://www.wtwco.com/en-us/insights/2025/10/insurance-marketplace-realities-2026-aviation-and-space" target="_blank">wtwco.com</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">8</div><div class="ref-text"><strong>165+ Claims Over $10M (All Time):</strong> Data Center Dynamics, "Paying the Premium: Why 2023 Was a Bad Year for Space Insurance," September 2024. <a href="https://www.datacenterdynamics.com/en/analysis/paying-the-premium-why-2023-was-a-bad-year-for-space-insurance/" target="_blank">datacenterdynamics.com</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">9</div><div class="ref-text"><strong>Space Shuttle Challenger — $9.4B Inflation-Adjusted Cost:</strong> Los Angeles Times, "Challenger Cost: $3.2 Billion," March 11, 1986. Inflation-adjusted per Wikipedia, "List of Disasters by Cost." <a href="https://en.wikipedia.org/wiki/List_of_disasters_by_cost" target="_blank">en.wikipedia.org</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">10</div><div class="ref-text"><strong>Space Shuttle Columbia — $11.2B Inflation-Adjusted; CAIB Investigation $500M+:</strong> Los Angeles Times, March 15, 2003. Columbia Accident Investigation Board, "Report Volume I," August 2003. <a href="https://ehss.energy.gov/deprep/archive/documents/0308_caib_report_volume1.pdf" target="_blank">ehss.energy.gov</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">11</div><div class="ref-text"><strong>ViaSat-3 Americas — $420M Insurance Claim (2023):</strong> CNBC, "Viasat Won't Replace Damaged Americas Satellite," October 2023. <a href="https://www.cnbc.com/2023/10/12/viasat-wont-replace-damaged-americas-satellite-improves-financial-targets.html" target="_blank">cnbc.com</a>. Also: SpaceNews, July 2023.</div></li>
+      <li class="ref-item"><div class="ref-badge">12</div><div class="ref-text"><strong>Inmarsat I6 F2 — $348M Insurance Claim (2023):</strong> SEC Filing, Inmarsat, October 2023. <a href="https://www.sec.gov/Archives/edgar/data/797721/000119312523254650/d546192dex991.htm" target="_blank">sec.gov</a>. Also: Slingshot Aerospace Report, April 2024.</div></li>
+      <li class="ref-item"><div class="ref-badge">13</div><div class="ref-text"><strong>SES mPower Satellites — $472M Disputed Claim (2024–2025):</strong> Space Intel Report, "Insurers Resist SES's $472-Million Claim," March 2025. <a href="https://www.spaceintelreport.com/insurers-resist-sess-472-million-claim-for-defects-on-mpower-satellites-saying-its-a-forecast-not-an-observed-loss/" target="_blank">spaceintelreport.com</a>. Also: SatNews, March 6, 2025.</div></li>
+      <li class="ref-item"><div class="ref-badge">14</div><div class="ref-text"><strong>Vega VV15 / Falcon Eye 1 — $411–$415M Claim (2019):</strong> Wikipedia, "Vega Flight VV15." <a href="https://en.wikipedia.org/wiki/Vega_flight_VV15" target="_blank">en.wikipedia.org</a>. Also: SpaceNews, September 5, 2019.</div></li>
+      <li class="ref-item"><div class="ref-badge">15</div><div class="ref-text"><strong>SiriusXM SXM-7 — $225M Insurance Claim (2020):</strong> CNBC, "Sirius XM's Latest Satellite Fails," January 2021. <a href="https://www.cnbc.com/2021/01/27/sirius-xm-satellite-sxm-7-fails-built-by-maxar-and-launched-by-spacex.html" target="_blank">cnbc.com</a>. Also: SEC Filing, SiriusXM, January 27, 2021.</div></li>
+      <li class="ref-item"><div class="ref-badge">16</div><div class="ref-text"><strong>SpaceX Falcon 9 / Amos-6 — $196–$200M Claim (2016):</strong> Artemis.bm, "SpaceX Explosion Satellite Loss to Cost Insurers $196M," November 2016. <a href="https://www.artemis.bm/news/spacex-explosion-satellite-loss-to-cost-insurers-196m/" target="_blank">artemis.bm</a>. Also: SpaceNews, October 10, 2016.</div></li>
+      <li class="ref-item"><div class="ref-badge">17</div><div class="ref-text"><strong>Aviation Black Box Mandate History (1958–1965):</strong> National Museum of Australia, "Black Box Flight Recorder Invented." <a href="https://www.nma.gov.au/defining-moments/resources/black-box-invented" target="_blank">nma.gov.au</a>. Pilot Institute, "Airplane Black Boxes Explained," January 2022. <a href="https://pilotinstitute.com/black-box-in-aircraft/" target="_blank">pilotinstitute.com</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">18</div><div class="ref-text"><strong>FAA Part 450 — Commercial Launch Financial Responsibility:</strong> Federal Aviation Administration, "14 CFR Part 450 – Launch and Reentry License Requirements." <a href="https://www.ecfr.gov/current/title-14/chapter-III/subchapter-C/part-450" target="_blank">ecfr.gov</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">19</div><div class="ref-text"><strong>Germany €35 Billion Military Space Investment (2026–2030):</strong> RAND Corporation, "Germany's €35 Billion Bet on Military Space Capability," November 2025. <a href="https://www.rand.org/pubs/commentary/2025/11/germanys-35-billion-bet-on-military-space-capability.html" target="_blank">rand.org</a>. Also: Defense News, September 25, 2025; Reuters, February 3, 2026.</div></li>
+      <li class="ref-item"><div class="ref-badge">20</div><div class="ref-text"><strong>Singapore STDP S$60 Million Fund &amp; NSAS Establishment:</strong> Office for Space Technology &amp; Industry (OSTIn), Singapore, "STDP Grant Call 2025." <a href="https://www.space.gov.sg/ostin-launches-stdp-grant-call-2025/" target="_blank">space.gov.sg</a>. Also: Singapore EDB, February 26, 2025; Straits Times, February 26, 2025.</div></li>
+      <li class="ref-item"><div class="ref-badge">21</div><div class="ref-text"><strong>Unmanned Underwater Vehicle (UUV) Market — $8.72B by 2030:</strong> MarketsandMarkets, "Unmanned Underwater Vehicles Market Worth $8.72 Billion by 2030," December 2025. <a href="https://finance.yahoo.com/news/unmanned-underwater-vehicles-market-worth-151500884.html" target="_blank">yahoo.com/finance</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">22</div><div class="ref-text"><strong>Autonomous Shipping Market:</strong> Mordor Intelligence, "Autonomous Ships Market," 2025–2026. <a href="https://www.mordorintelligence.com/industry-reports/autonomous-ships-market" target="_blank">mordorintelligence.com</a>.</div></li>
+      <li class="ref-item"><div class="ref-badge">23</div><div class="ref-text"><strong>Asteroid Mining Market — $2.05B (2025) to $5.42B (2030) at 21.4% CAGR:</strong> The Business Research Company, "Asteroid Mining Global Market Report 2026." <a href="https://www.thebusinessresearchcompany.com/report/asteroid-mining-global-market-report" target="_blank">thebusinessresearchcompany.com</a>. Also: Research and Markets, "Asteroid Mining Market Report 2026."</div></li>
+      <li class="ref-item"><div class="ref-badge">24</div><div class="ref-text"><strong>Lunar Economy — $170 Billion by 2040:</strong> PwC Lunar Market Assessment, cited in The Space Review, "The Search for a Commercial Lunar Economy," November 2024. <a href="https://www.thespacereview.com/article/4898/1" target="_blank">thespacereview.com</a>. Also: Forbes MENA, December 2025.</div></li>
+    </ul>
+  </div>
+
+</main>
+
+<footer>
+  <p><strong>IDI Market Research</strong> &nbsp;·&nbsp; Sources &amp; References &nbsp;·&nbsp; March 2026</p>
+  <p style="margin-top:0.5rem;">
+    <a href="blackboxeconomy.html">IDI Investor Briefing</a> &nbsp;·&nbsp;
+    <a href="space_insurance.html">Space Insurance Deep Dive</a>
+  </p>
+  <p style="margin-top:0.75rem; font-size:0.72rem;">All market sizing figures are estimates based on publicly available data and Value Theory methodology. They should not be construed as guarantees of future performance.</p>
+</footer>
+
+</body>
+</html>
