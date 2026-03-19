@@ -36,6 +36,63 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
 
+    /* CITATIONS */
+    .cite {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--accent);
+      vertical-align: super;
+      line-height: 1;
+      cursor: pointer;
+      text-decoration: none;
+      margin-left: 1px;
+    }
+    .cite:hover { color: var(--accent3); text-decoration: underline; }
+
+    /* SOURCES PANEL */
+    .sources-panel {
+      max-width: 1300px; margin: 0 auto 2rem;
+      padding: 0 2rem;
+    }
+    .sources-toggle {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem; font-weight: 600;
+      padding: 0.6rem 1.2rem; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sources-toggle:hover { border-color: var(--accent); color: var(--text); }
+    .sources-list {
+      display: none;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem;
+      margin-top: 0.75rem;
+    }
+    .sources-list.open { display: block; }
+    .sources-list h4 {
+      font-size: 0.78rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 1rem;
+    }
+    .source-item {
+      display: flex; gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem; line-height: 1.55;
+    }
+    .source-item:last-child { border-bottom: none; }
+    .source-num {
+      flex-shrink: 0; width: 22px; height: 22px;
+      background: rgba(0,212,255,0.12);
+      border: 1px solid rgba(0,212,255,0.3);
+      color: var(--accent); font-size: 0.65rem; font-weight: 700;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .source-text { color: var(--muted); }
+    .source-text a { color: var(--accent); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
     /* NAV */
     nav {
       position: sticky; top: 0; z-index: 100;
@@ -230,7 +287,7 @@
     </div>
     <div class="hero-stat">
       <span class="val">165+</span>
-      <div class="lbl">Claims &gt;$10M (All Time)</div>
+      <div class="lbl">Claims &gt;$10M (All Time)<a class="cite" href="#ins-sources" onclick="document.getElementById('ins-src-list').classList.add('open')">[6]</a></div>
       <div class="sub">▲ Data Center Dynamics</div>
     </div>
     <div class="hero-stat">
@@ -691,13 +748,13 @@
         <div class="driver-card">
           <div class="driver-icon">🚀</div>
           <div class="driver-title">Commercial Launch Boom</div>
-          <div class="driver-desc">317 orbital launches in 2025, up from ~100 in 2018. SpaceX, Rocket Lab, and new entrants driving unprecedented launch frequency. Each launch represents a new insurance event.</div>
+          <div class="driver-desc">317 orbital launches in 2025, up from ~100 in 2018.<a class="cite" href="#ins-sources" onclick="document.getElementById('ins-src-list').classList.add('open')">[7]</a> SpaceX, Rocket Lab, and new entrants driving unprecedented launch frequency. Each launch represents a new insurance event.</div>
           <span class="driver-impact high">Impact: Very High</span>
         </div>
         <div class="driver-card">
           <div class="driver-icon">🛰️</div>
           <div class="driver-title">Rising Asset Values</div>
-          <div class="driver-desc">Next-generation satellites (ViaSat-3, SES mPower, Inmarsat I6) are worth $400M–$1B+ each. Higher values drive higher premiums and larger potential claims.</div>
+          <div class="driver-desc">Next-generation satellites (ViaSat-3, SES mPower, Inmarsat I6) are worth $400M–$1B+ each.<a class="cite" href="#ins-sources" onclick="document.getElementById('ins-src-list').classList.add('open')">[8,9,10]</a> Higher values drive higher premiums and larger potential claims.</div>
           <span class="driver-impact high">Impact: Very High</span>
         </div>
         <div class="driver-card">
@@ -721,7 +778,7 @@
         <div class="driver-card">
           <div class="driver-icon">🤝</div>
           <div class="driver-title">New Capacity Entering</div>
-          <div class="driver-desc">4 new London market entrants in 2025. Increased competition is expanding total available capacity, enabling more missions to be insured at competitive rates.</div>
+          <div class="driver-desc">4 new London market entrants in 2025.<a class="cite" href="#ins-sources" onclick="document.getElementById('ins-src-list').classList.add('open')">[11]</a> Increased competition is expanding total available capacity, enabling more missions to be insured at competitive rates.</div>
           <span class="driver-impact medium">Impact: Medium</span>
         </div>
       </div>
@@ -881,6 +938,34 @@
     <p>Aviation black boxes were not adopted voluntarily. They were mandated by the FAA following the 1958 Aviation Safety Act, after a series of crashes where the cause could not be determined. The space industry is at an identical inflection point. The ViaSat-3 and Inmarsat I6 F2 failures of 2023 — combined with the emerging commercial human spaceflight sector — are creating the political and regulatory conditions for a space black box mandate. Our technology is positioned to be that standard.</p>
   </div>
 </section>
+
+<!-- SOURCES PANEL -->
+<hr class="divider" />
+<div id="ins-sources" class="sources-panel" style="padding: 2rem 2rem 0;">
+  <button class="sources-toggle" onclick="document.getElementById('ins-src-list').classList.toggle('open')">
+    📚 Sources &amp; References &nbsp;&#9660;
+  </button>
+  <div id="ins-src-list" class="sources-list">
+    <h4>Data Sources &amp; Citations</h4>
+    <div class="source-item"><div class="source-num">1</div><div class="source-text"><strong>Space Insurance Market Size ($4.43B in 2026; 9.1% CAGR; $6.23B by 2030); Regional Shares (North America 41%, Europe 26%, Asia-Pacific 24%):</strong> Research and Markets, “Space Insurance Market Report 2026,” <a href="https://www.researchandmarkets.com/reports/6167144/space-insurance-market-report" target="_blank">researchandmarkets.com</a>. Corroborated by market.us (2026) and MarketReportsWorld (February 2026).</div></div>
+    <div class="source-item"><div class="source-num">2</div><div class="source-text"><strong>2023 Record Claims ($995M) and Loss Ratio Crisis:</strong> Slingshot Aerospace, “State of Satellite Deployments &amp; Orbital Operations – 2023,” April 30, 2024, <a href="https://www.slingshot.space/news/state-of-satellite-deployments-and-orbital-operations-2023" target="_blank">slingshot.space</a>. Also: Satellite Today, May 1, 2024.</div></div>
+    <div class="source-item"><div class="source-num">3</div><div class="source-text"><strong>2019 Industry-Wide Loss Year ($788M Claims vs. ~$500M Premiums):</strong> SpaceNews, “Connecting the Dots | Double Whammy for Space Insurance,” October 6, 2023, <a href="https://spacenews.com/connecting-the-dots-double-whammy-for-space-insurance/" target="_blank">spacenews.com</a>. Also: SatNews, August 4, 2019.</div></div>
+    <div class="source-item"><div class="source-num">4</div><div class="source-text"><strong>Germany €35 Billion Military Space Investment (2026–2030):</strong> RAND Corporation, “Germany’s €35 Billion Bet on Military Space Capability,” November 13, 2025, <a href="https://www.rand.org/pubs/commentary/2025/11/germanys-35-billion-bet-on-military-space-capability.html" target="_blank">rand.org</a>. Also: Defense News, September 25, 2025; Reuters, February 3, 2026.</div></div>
+    <div class="source-item"><div class="source-num">5</div><div class="source-text"><strong>Singapore STDP S$60 Million Fund &amp; NSAS Establishment:</strong> Office for Space Technology &amp; Industry (OSTIn), Singapore, “STDP Grant Call 2025,” <a href="https://www.space.gov.sg/ostin-launches-stdp-grant-call-2025/" target="_blank">space.gov.sg</a>. Also: Singapore EDB, February 26, 2025; Straits Times, February 26, 2025.</div></div>
+    <div class="source-item"><div class="source-num">6</div><div class="source-text"><strong>165+ Claims Over $10M (All Time):</strong> Data Center Dynamics, “Paying the Premium: Why 2023 Was a Bad Year for Space Insurance,” September 3, 2024, <a href="https://www.datacenterdynamics.com/en/analysis/paying-the-premium-why-2023-was-a-bad-year-for-space-insurance/" target="_blank">datacenterdynamics.com</a>. Also cited in Space.com, June 28, 2025.</div></div>
+    <div class="source-item"><div class="source-num">7</div><div class="source-text"><strong>317 Orbital Launches in 2025:</strong> Wikipedia, “2025 in Spaceflight,” <a href="https://en.wikipedia.org/wiki/2025_in_spaceflight" target="_blank">en.wikipedia.org</a>. Also: Payload Space, “2025 Orbital Launch Attempts by Country,” January 2026.</div></div>
+    <div class="source-item"><div class="source-num">8</div><div class="source-text"><strong>ViaSat-3 Americas — $420M Insurance Claim (2023):</strong> CNBC, “Viasat Won’t Replace Damaged Americas Satellite,” October 12, 2023, <a href="https://www.cnbc.com/2023/10/12/viasat-wont-replace-damaged-americas-satellite-improves-financial-targets.html" target="_blank">cnbc.com</a>. Also: SpaceNews, July 19, 2023; Claims Journal, August 28, 2023.</div></div>
+    <div class="source-item"><div class="source-num">9</div><div class="source-text"><strong>Inmarsat I6 F2 — $348M Insurance Claim (2023):</strong> SEC Filing, Inmarsat, October 12, 2023, <a href="https://www.sec.gov/Archives/edgar/data/797721/000119312523254650/d546192dex991.htm" target="_blank">sec.gov</a>. Also: Slingshot Aerospace Report, April 2024.</div></div>
+    <div class="source-item"><div class="source-num">10</div><div class="source-text"><strong>SES mPower Satellites — $472M Disputed Claim (2024–2025):</strong> Space Intel Report, “Insurers Resist SES’s $472-Million Claim,” March 4, 2025, <a href="https://www.spaceintelreport.com/insurers-resist-sess-472-million-claim-for-defects-on-mpower-satellites-saying-its-a-forecast-not-an-observed-loss/" target="_blank">spaceintelreport.com</a>. Also: SatNews, March 6, 2025.</div></div>
+    <div class="source-item"><div class="source-num">11</div><div class="source-text"><strong>4 New London Market Entrants in 2025; Market Stabilization:</strong> WTW (Willis Towers Watson), “Insurance Marketplace Realities 2026 – Aviation &amp; Space,” October 2, 2025, <a href="https://www.wtwco.com/en-us/insights/2025/10/insurance-marketplace-realities-2026-aviation-and-space" target="_blank">wtwco.com</a>.</div></div>
+    <div class="source-item"><div class="source-num">12</div><div class="source-text"><strong>SpaceX Falcon 9 — Amos-6 Pad Explosion, $196–200M Claim (2016):</strong> Artemis.bm, “SpaceX Explosion Satellite Loss to Cost Insurers $196M,” November 4, 2016, <a href="https://www.artemis.bm/news/spacex-explosion-satellite-loss-to-cost-insurers-196m/" target="_blank">artemis.bm</a>. Also: SpaceNews, October 10, 2016.</div></div>
+    <div class="source-item"><div class="source-num">13</div><div class="source-text"><strong>Vega VV15 — Falcon Eye 1, $411–415M Claim (2019):</strong> Wikipedia, “Vega Flight VV15,” <a href="https://en.wikipedia.org/wiki/Vega_flight_VV15" target="_blank">en.wikipedia.org</a>. Also: SpaceNews, September 5, 2019.</div></div>
+    <div class="source-item"><div class="source-num">14</div><div class="source-text"><strong>SiriusXM SXM-7 — $225M Insurance Claim (2020):</strong> CNBC, “Sirius XM’s Latest Satellite Fails,” January 27, 2021, <a href="https://www.cnbc.com/2021/01/27/sirius-xm-satellite-sxm-7-fails-built-by-maxar-and-launched-by-spacex.html" target="_blank">cnbc.com</a>. Also: SEC Filing, SiriusXM, January 27, 2021.</div></div>
+    <div class="source-item"><div class="source-num">15</div><div class="source-text"><strong>Space Shuttle Columbia CAIB Report — Absence of Re-Entry Data:</strong> Columbia Accident Investigation Board, “Report Volume I,” August 2003, <a href="https://ehss.energy.gov/deprep/archive/documents/0308_caib_report_volume1.pdf" target="_blank">ehss.energy.gov</a>. Investigation cost $500M+: Los Angeles Times, March 15, 2003.</div></div>
+    <div class="source-item"><div class="source-num">16</div><div class="source-text"><strong>FAA Part 450 — Commercial Launch Financial Responsibility Requirements:</strong> Federal Aviation Administration, “14 CFR Part 450 – Launch and Reentry License Requirements,” <a href="https://www.ecfr.gov/current/title-14/chapter-III/subchapter-C/part-450" target="_blank">ecfr.gov</a>.</div></div>
+    <div class="source-item"><div class="source-num">17</div><div class="source-text"><strong>Aviation Black Box Mandate History (1958–1965):</strong> National Museum of Australia, “Black Box Flight Recorder Invented,” <a href="https://www.nma.gov.au/defining-moments/resources/black-box-invented" target="_blank">nma.gov.au</a>. Pilot Institute, “Airplane Black Boxes Explained,” January 2022, <a href="https://pilotinstitute.com/black-box-in-aircraft/" target="_blank">pilotinstitute.com</a>.</div></div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>

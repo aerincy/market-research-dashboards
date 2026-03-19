@@ -257,6 +257,65 @@
     .tl-body { font-size: 0.8rem; color: var(--muted); }
     .tl-val { display: inline-block; margin-top: 0.35rem; background: rgba(34,197,94,0.1); color: var(--green); font-size: 0.7rem; font-weight: 600; padding: 0.12rem 0.55rem; border-radius: 999px; }
 
+    /* ── CITATIONS ── */
+    .cite {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 700;
+      color: var(--blue);
+      vertical-align: super;
+      line-height: 1;
+      cursor: pointer;
+      text-decoration: none;
+      margin-left: 1px;
+    }
+    .cite:hover { color: var(--teal); text-decoration: underline; }
+
+    /* ── SOURCES PANEL ── */
+    .sources-panel {
+      max-width: 1280px; margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+    }
+    .sources-toggle {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.8rem; font-weight: 600;
+      padding: 0.6rem 1.2rem; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sources-toggle:hover { border-color: var(--blue); color: var(--text); }
+    .sources-list {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 0.75rem;
+    }
+    .sources-list.open { display: block; }
+    .sources-list h4 {
+      font-size: 0.78rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.1em; margin-bottom: 1rem;
+    }
+    .source-item {
+      display: flex; gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.78rem; line-height: 1.55;
+    }
+    .source-item:last-child { border-bottom: none; }
+    .source-num {
+      flex-shrink: 0; width: 22px; height: 22px;
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--blue); font-size: 0.65rem; font-weight: 700;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .source-text { color: var(--muted); }
+    .source-text a { color: var(--blue); text-decoration: none; }
+    .source-text a:hover { text-decoration: underline; }
+
     /* ── CREDIT FOOTER ── */
     .credit-bar {
       background: var(--bg-card);
@@ -343,13 +402,13 @@
       <span class="script-highlight">Thank you for your time today.</span> I want to start with a simple question: when a $500 million satellite fails in orbit, or a commercial launch vehicle explodes on the pad, what data survives to tell us why?
     </p>
     <p>
-      Today, the answer is almost nothing. The space industry is experiencing a historic boom — <span class="script-highlight">317 orbital launches in 2025 alone</span> — yet it still has no equivalent of the aviation black box. Every catastrophic failure is, in data terms, a total loss. That means the same failures repeat, insurance premiums stay high, and the industry cannot learn at the speed it needs to.
+      Today, the answer is almost nothing. The space industry is experiencing a historic boom — <span class="script-highlight">317 orbital launches in 2025 alone</span><a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[1]</a> — yet it still has no equivalent of the aviation black box. Every catastrophic failure is, in data terms, a total loss. That means the same failures repeat, insurance premiums stay high, and the industry cannot learn at the speed it needs to.
     </p>
     <p>
       We have built the solution. Our technology is a distributed system of hardened "data neurons" — placed inline throughout a vehicle's systems — that survive blast, fire, and atmospheric reentry, then transmit their data via GPS after an incident. <span class="script-highlight">We have already proven this in a real-world launch explosion.</span> The black box survived. The data was recovered.
     </p>
     <p>
-      The market opportunity this creates spans five verticals and a combined TAM of <span class="script-highlight">$2.18 billion</span>, with an immediate, serviceable market of <span class="script-highlight">$852 million</span> across the United States, Germany, and Singapore.
+      The market opportunity this creates spans five verticals and a combined TAM of <span class="script-highlight">$2.18 billion</span><a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[2]</a>, with an immediate, serviceable market of <span class="script-highlight">$852 million</span> across the United States, Germany, and Singapore.
     </p>
   </div>
 
@@ -432,10 +491,10 @@
       We size our TAM using the <span class="script-highlight">Value Theory approach</span> — not a top-down market report, but a bottom-up calculation of the economic value our technology creates for each customer. This is the methodology that sophisticated deep-tech investors expect, because it forces us to justify every number.
     </p>
     <p>
-      The core logic is this: with <span class="script-highlight">317 orbital launches in 2025</span> and a historical failure rate of approximately 5%, the industry faces roughly 15 catastrophic failures per year. At an average mission value of $200 million, and assuming our technology can prevent or mitigate 25% of those losses, the annual value to space operators alone is <span class="script-highlight">$750 million</span>.
+      The core logic is this: with <span class="script-highlight">317 orbital launches in 2025</span><a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[1]</a> and a historical failure rate of approximately 5%<a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[3]</a>, the industry faces roughly 15 catastrophic failures per year. At an average mission value of $200 million, and assuming our technology can prevent or mitigate 25% of those losses, the annual value to space operators alone is <span class="script-highlight">$750 million</span>.
     </p>
     <p>
-      On top of that, the global space insurance market — valued at <span class="script-highlight">$4.43 billion in 2026</span> — benefits directly from our technology. Better post-failure data means faster claims, lower litigation costs, and more accurate actuarial models. We conservatively value that systemic benefit at 7.5% of the insurance market, or <span class="script-highlight">$332 million</span>.
+      On top of that, the global space insurance market — valued at <span class="script-highlight">$4.43 billion in 2026</span><a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[4]</a> — benefits directly from our technology. Better post-failure data means faster claims, lower litigation costs, and more accurate actuarial models. We conservatively value that systemic benefit at 7.5% of the insurance market, or <span class="script-highlight">$332 million</span>.
     </p>
     <p>
       Add in the near-term terrestrial markets — autonomous shipping and unmanned submersibles — and the long-term Vision TAM in asteroid mining and the lunar economy, and you arrive at a combined TAM of <span class="script-highlight">$2.182 billion</span>.
@@ -605,7 +664,7 @@
 
   <div class="script-panel">
     <p>
-      The space insurance market deserves special attention because it is both a <span class="script-highlight">customer segment and a market accelerant</span>. The global market is valued at <span class="script-highlight">$4.43 billion in 2026</span> and is growing at 9.1% CAGR, reaching $6.23 billion by 2030. North America holds 41% of that market, Europe 26%, and Asia-Pacific 24%.
+      The space insurance market deserves special attention because it is both a <span class="script-highlight">customer segment and a market accelerant</span>. The global market is valued at <span class="script-highlight">$4.43 billion in 2026</span> and is growing at 9.1% CAGR, reaching $6.23 billion by 2030.<a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[4]</a> North America holds 41% of that market, Europe 26%, and Asia-Pacific 24%.
     </p>
     <p>
       The key insight is that space insurers are not passive participants in this market. They are active stakeholders with a direct financial incentive to improve post-failure data quality. Every catastrophic failure that goes unexplained costs them in litigation, extended claims processing, and inaccurate risk modeling. <span class="script-highlight">Our technology solves all three problems simultaneously.</span>
@@ -647,10 +706,10 @@
       I want to close the market sizing discussion with what I call the Vision TAM — not because it is speculative, but because it illustrates the <span class="script-highlight">structural inevitability</span> of our technology's role in the future of the off-world economy.
     </p>
     <p>
-      The asteroid mining market is projected to grow from $2.05 billion today to <span class="script-highlight">$5.42 billion by 2030</span> at a 21.4% CAGR. The commercial lunar economy is forecast to surpass <span class="script-highlight">$170 billion by 2040</span>. These are environments where a catastrophic failure of a mining vehicle or a lunar habitat is not just a financial loss — it is a mission-ending, potentially life-threatening event where physical investigation is impossible.
+      The asteroid mining market is projected to grow from $2.05 billion today to <span class="script-highlight">$5.42 billion by 2030</span> at a 21.4% CAGR.<a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[5]</a> The commercial lunar economy is forecast to surpass <span class="script-highlight">$170 billion by 2040</span>.<a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[6]</a> These are environments where a catastrophic failure of a mining vehicle or a lunar habitat is not just a financial loss — it is a mission-ending, potentially life-threatening event where physical investigation is impossible.
     </p>
     <p>
-      In these environments, our technology is not a component. It is <span class="script-highlight">foundational infrastructure</span>. The same regulatory dynamic that made black boxes mandatory in aviation will play out in the lunar economy — and we intend to be the established standard before that mandate arrives. Our Vision TAM from these two markets alone is <span class="script-highlight">$665 million</span>.
+      In these environments, our technology is not a component. It is <span class="script-highlight">foundational infrastructure</span>. The same regulatory dynamic that made black boxes mandatory in aviation will play out in the lunar economy — and we intend to be the established standard before that mandate arrives. Our Vision TAM from these two markets alone is <span class="script-highlight">$665 million</span>.<a class="cite" href="#sources" onclick="document.getElementById('src-list').classList.add('open')">[5,6]</a>
     </p>
   </div>
 
@@ -727,7 +786,32 @@
   </div>
 </div>
 
-<!-- ══ CREDIT FOOTER ════════════════════════════ -->
+<!-- ══ SOURCES PANEL ═══════════════════════════════ -->
+<hr class="section-divider" />
+<div id="sources" class="sources-panel">
+  <button class="sources-toggle" onclick="document.getElementById('src-list').classList.toggle('open')">
+    📚 Sources &amp; References &nbsp;&#9660;
+  </button>
+  <div id="src-list" class="sources-list">
+    <h4>Data Sources &amp; Citations</h4>
+    <div class="source-item"><div class="source-num">1</div><div class="source-text"><strong>317 Orbital Launches in 2025:</strong> Wikipedia, “2025 in Spaceflight,” <a href="https://en.wikipedia.org/wiki/2025_in_spaceflight" target="_blank">en.wikipedia.org/wiki/2025_in_spaceflight</a>. Corroborated by Payload Space, “2025 Orbital Launch Attempts by Country,” January 2026.</div></div>
+    <div class="source-item"><div class="source-num">2</div><div class="source-text"><strong>TAM of $2.18 Billion (Value Theory):</strong> Proprietary bottom-up calculation by IDI. Components: space systems operator value ($750M), space insurance systemic benefit ($332M), autonomous shipping ($138M), UUV market ($297M), Vision TAM ($665M). Methodology available upon request.</div></div>
+    <div class="source-item"><div class="source-num">3</div><div class="source-text"><strong>~5% Satellite Failure Rate:</strong> NASA NTRS — Jacklin, S.A. (2019), “Small-Satellite Mission Failure Rates,” <a href="https://ntrs.nasa.gov/api/citations/20190002705/downloads/20190002705.pdf" target="_blank">ntrs.nasa.gov</a>. Also: Forbes, “SpaceX Reveals That 5% Of Its Starlink Satellites Have Failed In Orbit,” June 2019.</div></div>
+    <div class="source-item"><div class="source-num">4</div><div class="source-text"><strong>Space Insurance Market $4.43B (2026), 9.1% CAGR to $6.23B (2030):</strong> Research and Markets, “Space Insurance Market Report 2026,” <a href="https://www.researchandmarkets.com/reports/6167144/space-insurance-market-report" target="_blank">researchandmarkets.com</a>. Corroborated by market.us and MarketReportsWorld (2026).</div></div>
+    <div class="source-item"><div class="source-num">5</div><div class="source-text"><strong>Asteroid Mining Market $2.05B (2025) to $5.42B (2030) at 21.4% CAGR:</strong> The Business Research Company, “Asteroid Mining Global Market Report 2026,” <a href="https://www.thebusinessresearchcompany.com/report/asteroid-mining-global-market-report" target="_blank">thebusinessresearchcompany.com</a>. Also: Research and Markets, “Asteroid Mining Market Report 2026,” <a href="https://www.researchandmarkets.com/reports/5785661/asteroid-mining-market-report" target="_blank">researchandmarkets.com</a>.</div></div>
+    <div class="source-item"><div class="source-num">6</div><div class="source-text"><strong>Lunar Economy $170 Billion by 2040:</strong> PwC Lunar Market Assessment, cited in The Space Review, “The Search for a Commercial Lunar Economy,” November 2024, <a href="https://www.thespacereview.com/article/4898/1" target="_blank">thespacereview.com</a>. Also: Forbes MENA, “A Booming $170 Billion Lunar Economy,” December 2025.</div></div>
+    <div class="source-item"><div class="source-num">7</div><div class="source-text"><strong>Space Shuttle Challenger — $9.4B Inflation-Adjusted Cost:</strong> Los Angeles Times, “Challenger Cost: $3.2 Billion,” March 11, 1986 (original). Inflation-adjusted per Wikipedia, “List of Disasters by Cost,” <a href="https://en.wikipedia.org/wiki/List_of_disasters_by_cost" target="_blank">en.wikipedia.org</a>. Investigation cost $175M: Los Angeles Times, March 2003.</div></div>
+    <div class="source-item"><div class="source-num">8</div><div class="source-text"><strong>Space Shuttle Columbia — $11.2B Inflation-Adjusted; CAIB Investigation $500M+:</strong> Los Angeles Times, “Cost of Columbia Accident Inquiry Is Soaring,” March 15, 2003. SpaceToday.net, March 16, 2003. CAIB Report: Columbia Accident Investigation Board, “Report Volume I,” August 2003, <a href="https://ehss.energy.gov/deprep/archive/documents/0308_caib_report_volume1.pdf" target="_blank">ehss.energy.gov</a>.</div></div>
+    <div class="source-item"><div class="source-num">9</div><div class="source-text"><strong>Germany €35 Billion Military Space Investment (2026–2030):</strong> RAND Corporation, “Germany’s €35 Billion Bet on Military Space Capability,” November 13, 2025, <a href="https://www.rand.org/pubs/commentary/2025/11/germanys-35-billion-bet-on-military-space-capability.html" target="_blank">rand.org</a>. Also: Defense News, September 25, 2025.</div></div>
+    <div class="source-item"><div class="source-num">10</div><div class="source-text"><strong>Singapore STDP S$60 Million Fund:</strong> Office for Space Technology &amp; Industry (OSTIn), Singapore, “STDP Grant Call 2025,” <a href="https://www.space.gov.sg/ostin-launches-stdp-grant-call-2025/" target="_blank">space.gov.sg</a>. Also: Singapore Economic Development Board (EDB), February 26, 2025.</div></div>
+    <div class="source-item"><div class="source-num">11</div><div class="source-text"><strong>Autonomous Shipping Market:</strong> Mordor Intelligence, “Autonomous Ships Market,” 2025–2026, <a href="https://www.mordorintelligence.com/industry-reports/autonomous-ships-market" target="_blank">mordorintelligence.com</a>.</div></div>
+    <div class="source-item"><div class="source-num">12</div><div class="source-text"><strong>Unmanned Underwater Vehicle (UUV) Market:</strong> MarketsandMarkets, “Unmanned Underwater Vehicles Market Worth $8.72 Billion by 2030,” December 2025, <a href="https://finance.yahoo.com/news/unmanned-underwater-vehicles-market-worth-151500884.html" target="_blank">yahoo.com/finance</a>.</div></div>
+    <div class="source-item"><div class="source-num">13</div><div class="source-text"><strong>Aviation Black Box Mandate History:</strong> National Museum of Australia, “Black Box Flight Recorder Invented,” <a href="https://www.nma.gov.au/defining-moments/resources/black-box-invented" target="_blank">nma.gov.au</a>. Pilot Institute, “Airplane Black Boxes Explained,” January 2022.</div></div>
+    <div class="source-item"><div class="source-num">14</div><div class="source-text"><strong>Survivable Data Recorders for Spacecraft (Prior Art):</strong> NASA NTRS — Carraway, J. &amp; Collins, J. (2003), “Survivable Failure Data Recorders for Spacecraft,” NPO-20842, <a href="https://ntrs.nasa.gov" target="_blank">ntrs.nasa.gov</a>.</div></div>
+  </div>
+</div>
+
+<!-- ══ CREDIT FOOTER ════════════════════════════════ -->
 <div class="credit-bar">
   <p>
     <strong>Market Analysis &amp; Dashboard Architecture:</strong> Manus AI &nbsp;|&nbsp;
