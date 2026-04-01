@@ -198,6 +198,111 @@
   /* Source note */
   .source-note { color: var(--muted); font-size: 11px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); text-align: center; }
   .source-note a { color: var(--accent2); text-decoration: none; }
+
+  /* Citation system */
+  .cite {
+    display: inline-block;
+    background: rgba(88,166,255,0.12);
+    color: var(--accent2);
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 0px 4px;
+    margin-left: 4px;
+    vertical-align: super;
+    line-height: 1.6;
+    cursor: default;
+    border: 1px solid rgba(88,166,255,0.25);
+    position: relative;
+  }
+  .cite:hover .cite-tooltip {
+    display: block;
+  }
+  .cite-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #21262d;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text);
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    font-weight: 400;
+    min-width: 280px;
+    max-width: 380px;
+    white-space: normal;
+    line-height: 1.5;
+  }
+  .cite-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border);
+  }
+  .inline-source {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+    line-height: 1.6;
+  }
+  .inline-source a { color: var(--accent2); text-decoration: none; }
+  .inline-source a:hover { text-decoration: underline; }
+  .inline-source .ref-num {
+    display: inline-block;
+    background: rgba(88,166,255,0.12);
+    color: var(--accent2);
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 3px;
+    padding: 0px 4px;
+    margin-right: 4px;
+    border: 1px solid rgba(88,166,255,0.25);
+  }
+
+  /* Bibliography */
+  .bibliography {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 28px;
+  }
+  .bibliography h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .bibliography ol {
+    padding-left: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 32px;
+  }
+  .bibliography li {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+    padding: 4px 0;
+  }
+  .bibliography li a { color: var(--accent2); text-decoration: none; }
+  .bibliography li a:hover { text-decoration: underline; }
+  .bibliography li strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -214,12 +319,12 @@
 
   <!-- KPI Cards -->
   <div class="kpi-grid" id="kpiGrid">
-    <div class="kpi-card"><div class="val" id="kpiTotal">6,075</div><div class="label">Total Facilities</div></div>
-    <div class="kpi-card"><div class="val" style="color:var(--active)" id="kpiActive">1,952</div><div class="label">Active / Operational</div></div>
-    <div class="kpi-card"><div class="val" style="color:var(--construction)" id="kpiConstruction">673</div><div class="label">Under Construction</div></div>
-    <div class="kpi-card"><div class="val" style="color:var(--announced)" id="kpiAnnounced">2,970</div><div class="label">Announced</div></div>
-    <div class="kpi-card"><div class="val" style="color:var(--delayed)" id="kpiDelayed">71</div><div class="label">Delayed</div></div>
-    <div class="kpi-card"><div class="val" style="color:var(--cancelled)" id="kpiCancelled">409</div><div class="label">Cancelled / Withdrawn</div></div>
+    <div class="kpi-card"><div class="val" id="kpiTotal">6,075</div><div class="label">Total Facilities <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026. https://www.aterio.io/insights/us-data-centers</span></span></div></div>
+    <div class="kpi-card"><div class="val" style="color:var(--active)" id="kpiActive">1,952</div><div class="label">Active / Operational <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026.</span></span></div></div>
+    <div class="kpi-card"><div class="val" style="color:var(--construction)" id="kpiConstruction">673</div><div class="label">Under Construction <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026.</span></span></div></div>
+    <div class="kpi-card"><div class="val" style="color:var(--announced)" id="kpiAnnounced">2,970</div><div class="label">Announced <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026.</span></span></div></div>
+    <div class="kpi-card"><div class="val" style="color:var(--delayed)" id="kpiDelayed">71</div><div class="label">Delayed <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026.</span></span></div></div>
+    <div class="kpi-card"><div class="val" style="color:var(--cancelled)" id="kpiCancelled">409</div><div class="label">Cancelled / Withdrawn <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Data as of March 31, 2026.</span></span></div></div>
   </div>
 
   <!-- Tabs -->
@@ -235,22 +340,26 @@
   <div class="tab-content active" id="tab-overview">
     <div class="charts-grid">
       <div class="chart-card">
-        <div class="chart-title">Facilities by Development Stage</div>
+        <div class="chart-title">Facilities by Development Stage <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — US Data Centers: Market Analysis &amp; Growth Forecast. Facility stage classifications (Active, Construction, Announced, Delayed, Cancelled). Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap short"><canvas id="stageDonut"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Top 10 States by Estimated Power Capacity (MW)</div>
+        <div class="chart-title">Top 10 States by Estimated Power Capacity (MW) <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Power capacity (MW) aggregated from facility-level records across all active data centers by state. Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap"><canvas id="statePowerBar"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
     </div>
     <div class="charts-grid">
       <div class="chart-card">
-        <div class="chart-title">Top 15 Providers by Number of Facilities</div>
+        <div class="chart-title">Top 15 Providers by Number of Facilities <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Provider facility counts across all development stages (Active, Construction, Announced). Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap tall"><canvas id="providerBar"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">National Announcement & Construction Momentum (All States, Monthly)</div>
+        <div class="chart-title">National Announcement &amp; Construction Momentum (All States, Monthly) <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Monthly count of new facility announcements, construction starts, and activations derived from RECORD_UPDATED_DATE field. Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap tall"><canvas id="momentumLine"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
     </div>
   </div>
@@ -258,12 +367,14 @@
   <!-- STATES TAB -->
   <div class="tab-content" id="tab-states">
     <div class="chart-card" style="margin-bottom:20px">
-      <div class="chart-title">Facilities by State and Stage (Top 20 States)</div>
+      <div class="chart-title">Facilities by State and Stage (Top 20 States) <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Facility counts by US state and development stage. Includes Active, Construction, Announced, Delayed, and Cancelled facilities. Data as of March 31, 2026.</span></span></div>
       <div class="chart-wrap tall"><canvas id="stateStackedBar"></canvas></div>
+      <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">State Summary Table</div>
+      <div class="chart-title">State Summary Table <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Aggregated facility counts and power capacity by state. Data as of March 31, 2026.</span></span></div>
       <div class="table-wrap" id="stateTableWrap"></div>
+      <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
     </div>
   </div>
 
@@ -271,12 +382,14 @@
   <div class="tab-content" id="tab-providers">
     <div class="charts-grid">
       <div class="chart-card">
-        <div class="chart-title">Top 20 Providers — Facility Count</div>
+        <div class="chart-title">Top 20 Providers — Facility Count <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Total facility count per provider across all development stages. Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap tall"><canvas id="providerHBar"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Top 20 Providers — Power Capacity (MW)</div>
+        <div class="chart-title">Top 20 Providers — Power Capacity (MW) <span class="cite">1<span class="cite-tooltip"><strong>[1] Aterio.io</strong> — Aggregate power capacity (MW) per provider across active facilities. Data as of March 31, 2026.</span></span></div>
         <div class="chart-wrap tall"><canvas id="providerPowerHBar"></canvas></div>
+        <div class="inline-source"><span class="ref-num">1</span> Aterio.io — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>, March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></div>
       </div>
     </div>
   </div>
@@ -289,7 +402,7 @@
       <div class="chart-title" style="font-size:15px">Demand for Compute Is Soaring <span style="font-weight:400;color:var(--muted);font-size:12px">(Total Tokens Consumed per Week, Billions)</span></div>
       <div style="color:var(--muted);font-size:12px;margin-bottom:16px">AI compute demand grew <span style="color:var(--accent);font-weight:700">+4,274%</span> in under one year — from 53B tokens/week in June 2024 to 2,318B tokens/week by May 2025. This exponential trajectory is the primary driver of accelerating data center construction and investment across the United States.</div>
       <div class="chart-wrap" style="height:320px"><canvas id="computeDemandChart"></canvas></div>
-      <div style="margin-top:12px;font-size:11px;color:var(--muted)">Source: OpenRouter as of May 26, 2025 &nbsp;|&nbsp; As cited in Goldman Sachs Investment Banking, <em>Powering the AI Era</em>, 2025</div>
+      <div class="inline-source"><span class="ref-num">2</span> OpenRouter — Token consumption data as of May 26, 2025. &nbsp;<span class="ref-num">3</span> Goldman Sachs Investment Banking — <em>Powering the AI Era</em>, 2025. <a href="https://www.goldmansachs.com/insights/goldman-sachs-research/data-center-power-demand-the-6-ps-driving-growth-and-constraints" target="_blank">goldmansachs.com</a></div>
     </div>
 
     <!-- Data Center Generation Evolution -->
@@ -322,7 +435,7 @@
           <div style="font-size:12px;color:var(--text);margin-top:6px">576 GPUs &nbsp;|&nbsp; Liquid Cooling</div>
         </div>
       </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--muted)">Source: Nvidia 2025 GTC Keynote Presentation &nbsp;|&nbsp; As cited in Goldman Sachs Investment Banking, <em>Powering the AI Era</em>, 2025</div>
+      <div class="inline-source"><span class="ref-num">4</span> Nvidia — GTC 2025 Keynote Presentation (Jensen Huang), March 2025. &nbsp;<span class="ref-num">3</span> Goldman Sachs Investment Banking — <em>Powering the AI Era</em>, 2025. <a href="https://www.goldmansachs.com/insights/goldman-sachs-research/data-center-power-demand-the-6-ps-driving-growth-and-constraints" target="_blank">goldmansachs.com</a></div>
     </div>
 
     <!-- Key Market Context KPIs -->
@@ -360,7 +473,7 @@
           <div style="font-size:11px;color:var(--muted);margin-top:6px">Comparable in scale to the railroad, electrification, and dot-com buildouts combined.</div>
         </div>
       </div>
-      <div style="margin-top:12px;font-size:11px;color:var(--muted)">Source: Goldman Sachs Investment Banking, <em>Powering the AI Era</em>, 2025 &nbsp;|&nbsp; Goldman Sachs Research, <em>Data Center Power Demand: The 6 Ps</em>, Nov 2025</div>
+      <div class="inline-source"><span class="ref-num">3</span> Goldman Sachs Investment Banking — <em>Powering the AI Era</em>, 2025. &nbsp;<span class="ref-num">5</span> Goldman Sachs Research — <em>Data Center Power Demand: The 6 Ps Driving Growth and Constraints</em>, November 2025. <a href="https://www.goldmansachs.com/insights/goldman-sachs-research/data-center-power-demand-the-6-ps-driving-growth-and-constraints" target="_blank">goldmansachs.com</a></div>
     </div>
 
   </div>
@@ -414,7 +527,18 @@
     </div>
   </div>
 
-  <div class="source-note">Data source: <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">Aterio.io — US Data Centers Market Analysis &amp; Growth Forecast</a> &nbsp;|&nbsp; March 31, 2026</div>
+  <!-- BIBLIOGRAPHY -->
+  <div class="bibliography">
+    <h3>Sources &amp; References</h3>
+    <ol>
+      <li><strong>Aterio.io</strong> — <em>US Data Centers: Market Analysis &amp; Growth Forecast</em>. Facility-level database covering 6,075 US data centers across all development stages. Data as of March 31, 2026. <a href="https://www.aterio.io/insights/us-data-centers" target="_blank">aterio.io/insights/us-data-centers</a></li>
+      <li><strong>OpenRouter</strong> — Aggregate AI token consumption data (total tokens consumed per week across all models). Data as of May 26, 2025. <a href="https://openrouter.ai" target="_blank">openrouter.ai</a></li>
+      <li><strong>Goldman Sachs Investment Banking</strong> — <em>Powering the AI Era</em>. Equity Research / Investment Banking Report, 2025. <a href="https://www.goldmansachs.com/insights/goldman-sachs-research/data-center-power-demand-the-6-ps-driving-growth-and-constraints" target="_blank">goldmansachs.com</a></li>
+      <li><strong>Nvidia Corporation</strong> — GTC 2025 Keynote Presentation (Jensen Huang, CEO). Data center power density by generation (Cloud 1.0 through AI Factory). March 2025. <a href="https://www.nvidia.com/gtc/" target="_blank">nvidia.com/gtc</a></li>
+      <li><strong>Goldman Sachs Research</strong> — <em>Data Center Power Demand: The 6 Ps Driving Growth and Constraints</em>. Equity Research Report, November 2025. <a href="https://www.goldmansachs.com/insights/goldman-sachs-research/data-center-power-demand-the-6-ps-driving-growth-and-constraints" target="_blank">goldmansachs.com</a></li>
+      <li><strong>MUFG Americas — Capital Markets Strategy</strong> — <em>AI Chart Weekly: Financing the AI Supercycle</em>. Global Corporate &amp; Investment Banking Research, December 19, 2025. <a href="https://www.mufgamericas.com" target="_blank">mufgamericas.com</a></li>
+    </ol>
+  </div>
 </div>
 
 <script>
